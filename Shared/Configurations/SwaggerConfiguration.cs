@@ -12,7 +12,10 @@ public static class SwaggerExtensions
 
     public static WebApplication UseSwaggerDocs(this WebApplication app)
     {
-        if (app.Environment.IsDevelopment())
+        var swaggerEnabled = app.Configuration.GetValue<bool?>("Swagger:Enabled")
+                             ?? app.Environment.IsDevelopment();
+
+        if (swaggerEnabled)
         {
             app.UseSwagger();
             app.UseSwaggerUI();
