@@ -1,0 +1,37 @@
+services:
+  mphqa_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mphqa_api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__Default: Host=mphqa_database;Port=5432;Database=mphqa_database;Username=postgres;Password=postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      mphqa_database:
+        condition: service_healthy
+
+  mphqa_database:
+    image: postgres:17-alpine
+    container_name: mphqa_database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mphqa_database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - mphqa_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mphqa_database"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mphqa_postgres_data:
