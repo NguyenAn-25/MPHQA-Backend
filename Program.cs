@@ -34,11 +34,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//config seeder
-if (app.Environment.IsDevelopment())
-{
-    await app.SeedDatabaseAsync();
-}
+// Apply pending migrations and run registered seeders in every environment.
+// Development-only fixture seeders enforce their own environment checks.
+await app.SeedDatabaseAsync();
 
 app.MapGet("/", (HttpContext context) =>
 {
