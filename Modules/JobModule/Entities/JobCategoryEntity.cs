@@ -32,5 +32,6 @@ public sealed class JobCategoryEntity
     public JobCategoryEntity? Parent { get; set; }
 
     public ICollection<JobCategoryEntity> Children { get; set; } = new List<JobCategoryEntity>();
+    [NotMapped]
     public ICollection<JobEntity> Jobs { get; set; } = new List<JobEntity>();
 }

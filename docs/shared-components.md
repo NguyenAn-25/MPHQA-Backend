@@ -108,11 +108,14 @@ Service ném lỗi nghiệp vụ; service không tự tạo `IActionResult` và 
 ## `Shared/Extensions`
 
 - `SharedApiExtensions.AddSharedApi`: đăng ký exception handler, Problem Details support, FluentValidation auto-validation và response factory cho lỗi model state.
+- `StringExtensions.NormalizeOptionalText`: trim text tùy chọn và đổi chuỗi null/rỗng/khoảng trắng thành `null`.
 - `DependencyInjection.AddApplicationServices`: hiện đăng ký `IExampleService` và scan FluentValidation validator trong assembly chứa `CreateExampleDtoValidator`. Tên hàm rộng hơn nội dung hiện tại; khi thêm module, đăng ký service/module mới rõ ràng theo hướng dẫn [Phát triển module](module-development.md).
 
 ## `Shared/Persistence`
 
 - `AppDbContext`: điểm cấu hình EF Core context và DbSet của các module.
+- `AppDbContext` map `ProfileEntity`, `ProfileIdentityEntity`, `VerificationRequestEntity` và notification records để review, lưu identity và thông báo trong cùng unit of work.
+- `DatabaseReferenceExtensions.HasReferencesAsync`: kiểm tra một ID có được tham chiếu trong bảng/cột PostgreSQL chỉ định hay không; tên bảng/cột được kiểm tra định dạng trước khi tạo truy vấn.
 - `AppDbContextFactory`: tạo context khi chạy EF CLI mà không khởi động web app/seeder. Nó đọc appsettings, User Secrets và environment variables.
 - `Migrations/`: migration và model snapshot.
 - `Seeders/ISeeder`: contract seeder với thứ tự chạy và hàm `SeedAsync`.
@@ -121,6 +124,8 @@ Service ném lỗi nghiệp vụ; service không tự tạo `IActionResult` và 
 - `Seeders/AuthDevelopmentAdminSeeder`: tạo một admin local tùy chỉnh khi có đủ secrets; chỉ chạy trong Development, không tạo session/OTP và không ghi đè user có sẵn.
 - `Seeders/AuthDevelopmentAdminAccountsSeeder`: tạo hai admin fixture với password Development `123456`; chỉ chạy trong Development và không nâng quyền user có sẵn.
 - `Seeders/AuthDevelopmentSampleDataSeeder`: tạo 24 user mẫu với password Development `123456`, 44 OTP và 40 session lịch sử đã hết hạn; chỉ chạy trong Development.
+- `Seeders/JobCategorySeeder`: thêm 28 lĩnh vực gốc cùng 181 danh mục công việc ngắn hạn còn thiếu; chạy trong pipeline Development.
+- `Modules/SkillModule/Seeders/SkillSeeder`: thêm 157 kỹ năng ngắn hạn còn thiếu; chạy trong pipeline Development.
 - `Seeders/ExampleDataSeeder`: seeder mẫu đang có trong source nhưng hiện không đăng ký trong `AddSeeders()`.
 
 Cách tạo/áp dụng migration và sự khác nhau giữa startup Development/Production nằm trong [Cơ sở dữ liệu và migration](persistence-and-migrations.md).

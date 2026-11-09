@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DotNetSkeleton.Modules.ProfileModule.Entities;
+namespace DotNetSkeleton.Modules.SkillModule.Entities;
 
 [Table("skills")]
 public sealed class SkillEntity
@@ -24,7 +24,4 @@ public sealed class SkillEntity
     [Required]
     [Column("name")]
     public string Name { get; set; } = string.Empty;
-
-    public ICollection<ProfileSkillEntity> ProfileSkills { get; set; } = new List<ProfileSkillEntity>();
-    public ICollection<DotNetSkeleton.Modules.JobModule.Entities.JobRequiredSkillEntity> JobRequiredSkills { get; set; } = new List<DotNetSkeleton.Modules.JobModule.Entities.JobRequiredSkillEntity>();
 }

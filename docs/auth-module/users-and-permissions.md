@@ -110,8 +110,11 @@ Seeder và migration khai báo đúng function/action đang được dùng bởi
 | Function | Actions |
 |---|---|
 | `users` | `read`, `create`, `update` |
+| `job_categories` | `read`, `create`, `update`, `delete` |
+| `skills` | `read`, `create`, `update`, `delete` |
+| `verification_requests` | `read`, `update` |
 
-Profile `ADMIN_DEFAULT` khởi tạo với ba grant `users:read`, `users:create`, `users:update` để dùng được các API hiện có. Seeder chỉ thêm bộ grant ban đầu khi tạo profile này lần đầu; những lần khởi động sau không tự khôi phục grant đã bị gỡ. Có thể tạo permission profile khác rồi cấp action phù hợp qua `permission_details`.
+Profile `ADMIN_DEFAULT` khởi tạo với ba grant `users:read`, `users:create`, `users:update` và các grant quản lý lĩnh vực, kỹ năng, yêu cầu xác thực. Seeder chỉ thêm bộ grant ban đầu khi tạo profile này lần đầu; migration module bổ sung grant mới cho profile mặc định đã tồn tại. Những lần khởi động sau không tự khôi phục grant đã bị gỡ. Có thể tạo permission profile khác rồi cấp action phù hợp qua `permission_details`. Xem [API quản lý lĩnh vực](../job-module/job-categories.md), [API quản lý kỹ năng](../skill-module/skills.md) và [admin xử lý yêu cầu xác thực](../verification-module/verification-requests.md).
 
 ### Tạo tài khoản quản trị ban đầu
 

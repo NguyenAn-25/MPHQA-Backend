@@ -4,12 +4,18 @@ using DotNetSkeleton.Shared.Configurations;
 using DotNetSkeleton.Shared.Extensions;
 using DotNetSkeleton.Shared.Api;
 using DotNetSkeleton.Modules.AuthModule.Extensions;
+using DotNetSkeleton.Modules.JobModule.Extensions;
+using DotNetSkeleton.Modules.SkillModule.Extensions;
+using DotNetSkeleton.Modules.ProfileModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddAuthModule(builder.Configuration, builder.Environment);
+builder.Services.AddJobModule();
+builder.Services.AddSkillModule();
+builder.Services.AddProfileModule();
 builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()

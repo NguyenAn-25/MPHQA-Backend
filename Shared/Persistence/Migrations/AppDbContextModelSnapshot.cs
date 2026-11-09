@@ -232,6 +232,14 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTimeOffset?>("IdentityRejectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("identity_rejected_at");
+
+                    b.Property<DateTimeOffset?>("IdentityVerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("identity_verified_at");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
@@ -314,6 +322,291 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.ToTable("Examples");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parent_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("job_categories");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationDetailEntity", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("notification_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("read_at");
+
+                    b.HasKey("NotificationId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("notification_details");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("SendTo")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("send_to");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.ToTable("notifications");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text")
+                        .HasColumnName("address");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("text")
+                        .HasColumnName("avatar");
+
+                    b.Property<DateOnly?>("Birthdate")
+                        .HasColumnType("date")
+                        .HasColumnName("birthdate");
+
+                    b.Property<string>("Fullname")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fullname");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("text")
+                        .HasColumnName("gender");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("numeric(10,7)")
+                        .HasColumnName("lat");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("numeric(10,7)")
+                        .HasColumnName("lng");
+
+                    b.Property<string>("Major")
+                        .HasColumnType("text")
+                        .HasColumnName("major");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text")
+                        .HasColumnName("note");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("profiles");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileIdentityEntity", b =>
+                {
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("integer")
+                        .HasColumnName("profile_id");
+
+                    b.Property<string>("CardBackImage")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("card_back_image");
+
+                    b.Property<string>("CardFrontImage")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("card_front_image");
+
+                    b.Property<string>("CardId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("card_id");
+
+                    b.Property<string>("FullNameOnCard")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("full_name_on_card");
+
+                    b.HasKey("ProfileId");
+
+                    b.ToTable("profile_identities");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.SkillModule.Entities.SkillEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("skills");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.VerificationRequestEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CardBackImage")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("card_back_image");
+
+                    b.Property<string>("CardFrontImage")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("card_front_image");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("FullNameOnCard")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("full_name_on_card");
+
+                    b.Property<string>("IdNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("id_number");
+
+                    b.Property<string>("PortraitImage")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("portrait_image");
+
+                    b.Property<DateTimeOffset?>("RejectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("rejected_at");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_reason");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sender_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("verified_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("Status", "CreatedAt");
+
+                    b.ToTable("verification_requests");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.AuthModule.Entities.AuthOtpEntity", b =>
                 {
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
@@ -365,6 +658,79 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Permission");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationDetailEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", "Notification")
+                        .WithMany("Details")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
+                        .WithOne()
+                        .HasForeignKey("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileIdentityEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", "Profile")
+                        .WithOne("Identity")
+                        .HasForeignKey("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileIdentityEntity", "ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.VerificationRequestEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.AuthModule.Entities.FunctionEntity", b =>
                 {
                     b.Navigation("PermissionDetails");
@@ -382,6 +748,21 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("AuthOtps");
 
                     b.Navigation("AuthSessions");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", b =>
+                {
+                    b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", b =>
+                {
+                    b.Navigation("Identity");
                 });
 #pragma warning restore 612, 618
         }

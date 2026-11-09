@@ -10,14 +10,27 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
     private static readonly (string NameVn, string NameEn, string[] Actions)[] FunctionCatalog =
     [
         // Keep this catalog aligned with the permission policies on implemented endpoints.
-        ("Quản lý người dùng", "users", ["read", "create", "update"])
+        ("Quản lý người dùng", "users", ["read", "create", "update"]),
+        ("Quản lý lĩnh vực", "job_categories", ["read", "create", "update", "delete"]),
+        ("Quản lý kỹ năng", "skills", ["read", "create", "update", "delete"]),
+        ("Xử lý yêu cầu xác thực", "verification_requests", ["read", "update"])
     ];
 
     private static readonly (string Function, string Action)[] InitialAdminGrants =
     [
         ("users", "read"),
         ("users", "create"),
-        ("users", "update")
+        ("users", "update"),
+        ("job_categories", "read"),
+        ("job_categories", "create"),
+        ("job_categories", "update"),
+        ("job_categories", "delete"),
+        ("skills", "read"),
+        ("skills", "create"),
+        ("skills", "update"),
+        ("skills", "delete"),
+        ("verification_requests", "read"),
+        ("verification_requests", "update")
     ];
 
     private static readonly string[] RetiredFunctionNames = ["auth", "permissions"];
