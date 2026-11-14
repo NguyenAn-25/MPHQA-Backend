@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.ProfileModule.Entities;
 
 [Table("verification_requests")]
+[Index(nameof(Status), nameof(CreatedAt))]
 public sealed class VerificationRequestEntity
 {
     [Key]
@@ -33,13 +35,20 @@ public sealed class VerificationRequestEntity
 
     [Required]
     [Column("status")]
-    public string Status { get; set; } = "PENDING";
+    public string Status { get; set; } = VerificationRequestStatuses.Pending;
 
     [Column("rejection_reason", TypeName = "text")]
     public string? RejectionReason { get; set; }
 
+    [Required]
+    [Column("created_at")]
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
     [Column("verified_at")]
     public DateTimeOffset? VerifiedAt { get; set; }
+
+    [Column("rejected_at")]
+    public DateTimeOffset? RejectedAt { get; set; }
 
     [Required]
     [Column("sender_id")]
@@ -47,4 +56,12 @@ public sealed class VerificationRequestEntity
 
     [ForeignKey(nameof(SenderId))]
     public DotNetSkeleton.Modules.AuthModule.Entities.UserEntity Sender { get; set; } = null!;
+}
+
+public static class VerificationRequestStatuses
+{
+    public const string Pending = "PENDING";
+    public const string Accepted = "ACCEPTED";
+    public const string Rejected = "REJECTED";
+    public const string Cancelled = "CANCELLED";
 }

@@ -1,6 +1,6 @@
 # Tài liệu hệ thống
 
-Bộ tài liệu ở thư mục này mô tả **toàn bộ kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Phần nghiệp vụ xác thực, quản lý user và permission được tách riêng trong [AuthModule](auth-module/README.md).
+Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Nghiệp vụ xác thực, quản lý user và permission nằm trong [AuthModule](auth-module/README.md); quản lý lĩnh vực nằm trong [JobModule](job-module/job-categories.md); danh mục kỹ năng dùng chung nằm trong [SkillModule](skill-module/skills.md); admin xử lý yêu cầu xác thực thuộc [ProfileModule](profile-module/verification-requests.md).
 
 ## Tài liệu toàn hệ thống
 
@@ -20,6 +20,18 @@ Bộ tài liệu ở thư mục này mô tả **toàn bộ kiến trúc và các
 - [Quản lý user và permission](auth-module/users-and-permissions.md)
 - [Mô hình dữ liệu AuthModule](auth-module/data-model-and-migrations.md)
 - [Cấu hình AuthModule](auth-module/configuration.md)
+
+## Tài liệu JobModule
+
+- [Quản lý lĩnh vực](job-module/job-categories.md)
+
+## Tài liệu SkillModule
+
+- [Quản lý kỹ năng dùng chung cho Job và Profile](skill-module/skills.md)
+
+## Tài liệu ProfileModule
+
+- [Admin xử lý yêu cầu xác thực](profile-module/verification-requests.md)
 
 ## Bắt đầu nhanh
 

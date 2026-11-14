@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.SkillModule.Entities;
 
 namespace DotNetSkeleton.Modules.ProfileModule.Entities;
 

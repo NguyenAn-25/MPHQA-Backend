@@ -43,6 +43,13 @@ public sealed class UserEntity
     [Column("verified_at")]
     public DateTimeOffset? VerifiedAt { get; set; }
 
+    // Separate identity-review timestamps from VerifiedAt, which records phone OTP verification.
+    [Column("identity_verified_at")]
+    public DateTimeOffset? IdentityVerifiedAt { get; set; }
+
+    [Column("identity_rejected_at")]
+    public DateTimeOffset? IdentityRejectedAt { get; set; }
+
     [Column("last_active_at")]
     public DateTimeOffset? LastActiveAt { get; set; }
 

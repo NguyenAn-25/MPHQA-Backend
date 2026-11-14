@@ -1,6 +1,10 @@
 using DotNetSkeleton.Modules.ExampleModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Converters;
+using DotNetSkeleton.Modules.JobModule.Entities;
+using DotNetSkeleton.Modules.SkillModule.Entities;
+using DotNetSkeleton.Modules.ProfileModule.Entities;
+using DotNetSkeleton.Modules.NotificationModule.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Shared.Persistence;
@@ -16,6 +20,13 @@ public class AppDbContext : DbContext
     public DbSet<PermissionEntity> Permissions => Set<PermissionEntity>();
     public DbSet<PermissionDetailEntity> PermissionDetails => Set<PermissionDetailEntity>();
     public DbSet<FunctionEntity> Functions => Set<FunctionEntity>();
+    public DbSet<JobCategoryEntity> JobCategories => Set<JobCategoryEntity>();
+    public DbSet<SkillEntity> Skills => Set<SkillEntity>();
+    public DbSet<ProfileEntity> Profiles => Set<ProfileEntity>();
+    public DbSet<ProfileIdentityEntity> ProfileIdentities => Set<ProfileIdentityEntity>();
+    public DbSet<VerificationRequestEntity> VerificationRequests => Set<VerificationRequestEntity>();
+    public DbSet<NotificationEntity> Notifications => Set<NotificationEntity>();
+    public DbSet<NotificationDetailEntity> NotificationDetails => Set<NotificationDetailEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,6 +66,48 @@ public class AppDbContext : DbContext
             .Property(permission => permission.Status)
             .HasConversion(new PermissionStatusValueConverter())
             .HasMaxLength(24);
+
+        modelBuilder.Entity<JobCategoryEntity>()
+            .HasOne(category => category.Parent)
+            .WithMany(category => category.Children)
+            .HasForeignKey(category => category.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProfileEntity>()
+            .HasOne(profile => profile.User)
+            .WithOne()
+            .HasForeignKey<ProfileEntity>(profile => profile.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ProfileIdentityEntity>()
+            .HasOne(identity => identity.Profile)
+            .WithOne(profile => profile.Identity)
+            .HasForeignKey<ProfileIdentityEntity>(identity => identity.ProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<VerificationRequestEntity>()
+            .HasOne(request => request.Sender)
+            .WithMany()
+            .HasForeignKey(request => request.SenderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<NotificationEntity>()
+            .HasOne(notification => notification.Creator)
+            .WithMany()
+            .HasForeignKey(notification => notification.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NotificationDetailEntity>()
+            .HasOne(detail => detail.Notification)
+            .WithMany(notification => notification.Details)
+            .HasForeignKey(detail => detail.NotificationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<NotificationDetailEntity>()
+            .HasOne(detail => detail.User)
+            .WithMany()
+            .HasForeignKey(detail => detail.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }
