@@ -11,6 +11,7 @@ public static class SeederExtensions
         // Seed authorization reference data and shared short-term job taxonomy.
         services.AddScoped<ISeeder, AuthPermissionCatalogSeeder>();
         services.AddScoped<ISeeder, CategorySeeder>();
+        services.AddScoped<ISeeder, PaymentMethodSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentAdminSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentAdminAccountsSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentSampleDataSeeder>();
@@ -18,6 +19,12 @@ public static class SeederExtensions
         services.AddScoped<ISeeder, SkillSeeder>();
         services.AddScoped<ISeeder, ProfileDevelopmentSampleDataSeeder>();
         services.AddScoped<ISeeder, NotificationDevelopmentSampleDataSeeder>();
+        services.AddScoped<ISeeder, WalletDevelopmentSeeder>();
+        services.AddScoped<ISeeder, ConnectionFeeSettingSeeder>();
+        services.AddScoped<ISeeder, PostPackageSeeder>();
+        services.AddScoped<ISeeder, JobSeeder>();
+        services.AddScoped<ISeeder, JobImageSeeder>();
+        services.AddScoped<ISeeder, SavedJobSeeder>();
         services.AddScoped<DatabaseSeeder>();
 
         return services;

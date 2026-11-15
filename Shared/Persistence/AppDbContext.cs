@@ -3,13 +3,15 @@ using DotNetSkeleton.Modules.AuthModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Converters;
 using DotNetSkeleton.Modules.JobModule.Entities;
 using DotNetSkeleton.Modules.SkillModule.Entities;
+using DotNetSkeleton.Modules.JobModule.Converters;
+using DotNetSkeleton.Modules.MessagingModule.Entities;
+using DotNetSkeleton.Modules.NotificationModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Converters;
-using DotNetSkeleton.Modules.NotificationModule.Entities;
 using DotNetSkeleton.Modules.NotificationModule.Converters;
-using DotNetSkeleton.Modules.MessagingModule.Entities;
 using DotNetSkeleton.Modules.ReportModule.Entities;
 using DotNetSkeleton.Modules.WalletModule.Entities;
+using DotNetSkeleton.Modules.WalletModule.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Shared.Persistence;
@@ -172,6 +174,31 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(detail => detail.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.Status)
+            .HasConversion(new JobStatusValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.PricingModel)
+            .HasConversion(new PricingModelValueConverter())
+            .HasMaxLength(24);
+
+        modelBuilder.Entity<ApplicationEntity>()
+            .Property(application => application.Status)
+            .HasConversion(new ApplicationStatusValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<WalletTransactionEntity>()
+            .Property(transaction => transaction.ObjectType)
+            .HasConversion(new WalletObjectTypeValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<WalletTransactionEntity>()
+            .Property(transaction => transaction.Type)
+            .HasConversion(new WalletTransactionTypeValueConverter())
+            .HasMaxLength(16);
 
     }
 }

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace DotNetSkeleton.Shared.Persistence.Seeders;
 
 /// <summary>
-/// Creates one local development administrator when explicit User Secrets are supplied.
-/// This seeder never runs outside Development and never overwrites an existing account.
+/// Creates one fixture administrator when explicit configuration values are supplied.
+/// This seeder never overwrites an existing account.
 /// </summary>
 public sealed class AuthDevelopmentAdminSeeder(
     IConfiguration configuration,
@@ -22,7 +22,7 @@ public sealed class AuthDevelopmentAdminSeeder(
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var phone = configuration["Seed:AdminPhone"]?.Trim();

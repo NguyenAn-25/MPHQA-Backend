@@ -353,7 +353,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<int>("UserId")
@@ -515,7 +516,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("PricingModel")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
                         .HasColumnName("pricing_model");
 
                     b.Property<DateTimeOffset?>("RejectedAt")
@@ -541,7 +543,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<DateTimeOffset>("TimeEndAt")
@@ -1310,12 +1313,14 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnName("object_id");
 
                     b.Property<string>("ObjectType")
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("object_type");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("type");
 
                     b.Property<int>("WalletId")
