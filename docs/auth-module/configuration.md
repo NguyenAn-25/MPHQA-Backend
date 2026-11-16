@@ -87,7 +87,7 @@ dotnet user-secrets set "Seed:AdminPassword" "ReplaceMe@2026"
 
 `AuthDevelopmentAdminSeeder` tạo user active có role `ADMIN` và permission profile `ADMIN_DEFAULT`, hash mật khẩu bằng `PasswordHasher` và không tạo session/OTP. Mật khẩu cấu hình phải dài 8–128 ký tự, có chữ in hoa, chữ số và ký tự đặc biệt. Luồng này bỏ qua xác minh số điện thoại, vì vậy chỉ dùng trong Development. Seeder không sửa user đã tồn tại và sẽ báo lỗi nếu số điện thoại cấu hình thuộc một tài khoản khác. Xóa hai User Secrets này nếu không muốn seeder tạo tài khoản tùy chỉnh.
 
-`AuthDevelopmentSampleDataSeeder` tự tạo 24 user giả lập và 44 OTP/40 session lịch sử. Password của các user mẫu là `123456`; trong đó 16 user active đăng nhập được. Bốn tài khoản chờ xác minh và bốn tài khoản đã tắt không thể đăng nhập. OTP/session đều hết hạn. Số điện thoại dùng dải giả lập `+12025550100`–`+12025550123`. Đây chỉ là dữ liệu Development.
+`AuthDevelopmentSampleDataSeeder` tạo tối đa 60 user giả lập với số điện thoại `+12025550100`–`+12025550159`; password là `123456`, OTP/session mẫu đều hết hạn. Trên database mới có 36 user active, 8 user chờ xác minh và 16 user đã xác minh nhưng bị tắt. `ProfileDevelopmentSampleDataSeeder` thêm hồ sơ, kinh nghiệm, kỹ năng, yêu cầu xác thực và identity mẫu liên kết với các user này. Các seeder chỉ chạy trong Development và không ghi đè profile/request đã tồn tại.
 
 ## Rate limit Auth
 

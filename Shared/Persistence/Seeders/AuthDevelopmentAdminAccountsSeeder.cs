@@ -10,10 +10,11 @@ using Microsoft.EntityFrameworkCore;
 namespace DotNetSkeleton.Shared.Persistence.Seeders;
 
 /// <summary>
-/// Creates fictional administrator accounts for local Development use only.
-/// This seeder never runs outside Development and never promotes existing accounts.
+/// Creates fictional administrator fixture accounts when development data seeding is enabled.
+/// This seeder never promotes existing accounts.
 /// </summary>
 public sealed class AuthDevelopmentAdminAccountsSeeder(
+    IConfiguration configuration,
     IWebHostEnvironment environment,
     IPasswordHasher<UserEntity> passwordHasher,
     ILogger<AuthDevelopmentAdminAccountsSeeder> logger) : ISeeder
@@ -31,12 +32,12 @@ public sealed class AuthDevelopmentAdminAccountsSeeder(
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var permission = await context.Permissions.SingleOrDefaultAsync(
             profile => profile.Name == PermissionConstants.DefaultAdminProfileName &&
-                       profile.Status == PermissionStatus.Active);
+                       profile.IsActive);
         if (permission is null)
         {
             throw new InvalidOperationException(

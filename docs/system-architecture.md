@@ -26,6 +26,23 @@ DotNetSkeleton/
 │   │   ├── DTOs/Responses/
 │   │   ├── Entities/
 │   │   └── Services/Interfaces/
+│   ├── JobModule/
+│   │   ├── Controllers/
+│   │   ├── DTOs/
+│   │   ├── Entities/
+│   │   └── Services/
+│   ├── ProfileModule/
+│   │   ├── Controllers/
+│   │   ├── DTOs/Requests/
+│   │   ├── DTOs/Responses/
+│   │   ├── Entities/
+│   │   ├── Mappings/
+│   │   └── Services/
+│   ├── SkillModule/
+│   │   ├── Controllers/
+│   │   ├── DTOs/
+│   │   ├── Entities/
+│   │   └── Services/
 │   └── ExampleModule/
 │       ├── Controllers/
 │       ├── DTOs/Requests/
@@ -45,7 +62,7 @@ DotNetSkeleton/
     └── Validation/
 ```
 
-`ExampleModule` là module mẫu đang có trong repository. Cấu trúc bên trong các module hiện chưa hoàn toàn đồng nhất; khi thêm module mới, dùng convention thống nhất trong [Phát triển module](module-development.md).
+`AuthModule`, `JobModule`, `SkillModule` và `ProfileModule` có các luồng API được tách theo controller/service/DTO. `SkillEntity` thuộc `SkillModule` vì được dùng bởi cả `JobModule` và `ProfileModule`; luồng admin xử lý giấy tờ nằm trong `ProfileModule` cùng với entity yêu cầu xác thực, và phối hợp với Notification để thông báo kết quả. `ExampleModule` là module mẫu; khi thêm module mới, dùng convention thống nhất trong [Phát triển module](module-development.md).
 
 ## Các thành phần chính
 
@@ -53,7 +70,7 @@ DotNetSkeleton/
 
 `Program.cs` đăng ký và ráp các thành phần theo thứ tự:
 
-1. `AddAuthModule(...)` đăng ký controllers và dependency của AuthModule.
+1. `AddAuthModule(...)`, `AddJobModule()`, `AddSkillModule()` và `AddProfileModule()` đăng ký controllers và dependency của các module.
 2. `AddSharedApi()` đăng ký exception/validation response dùng chung.
 3. `AddSwaggerDocs()` đăng ký OpenAPI và Swagger.
 4. `AddDatabase(...)` đăng ký `AppDbContext` với PostgreSQL.

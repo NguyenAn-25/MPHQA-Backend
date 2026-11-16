@@ -35,7 +35,7 @@ public static class AuthMappingConfiguration
                 destination => destination.Permission,
                 source => source.Permission == null
                     ? null
-                    : new PermissionSummaryResponseDto(
+                    : new UserPermissionSummaryResponseDto(
                         source.Permission.Id,
                         source.Permission.Name));
 
@@ -53,11 +53,45 @@ public static class AuthMappingConfiguration
                 destination => destination.Permission,
                 source => source.Permission == null
                     ? null
-                    : new PermissionDetailResponseDto(
+                    : new UserPermissionDetailResponseDto(
                         source.Permission.Id,
                         source.Permission.Name,
                         source.Permission.Description,
-                        source.Permission.Status));
+                        source.Permission.IsActive));
+
+        config.NewConfig<FunctionEntity, FunctionSummaryResponseDto>()
+            .Map(destination => destination.Id, source => source.Id)
+            .Map(destination => destination.Code, source => source.Code)
+            .Map(destination => destination.NameVi, source => source.NameVi)
+            .Map(destination => destination.NameEn, source => source.NameEn)
+            .Map(destination => destination.Actions, source => source.Actions);
+
+        config.NewConfig<PermissionEntity, PermissionSummaryResponseDto>()
+            .Map(destination => destination.Id, source => source.Id)
+            .Map(destination => destination.Name, source => source.Name)
+            .Map(destination => destination.Description, source => source.Description)
+            .Map(destination => destination.IsActive, source => source.IsActive)
+            .Map(destination => destination.UserCount, source => source.Users.Count);
+
+        config.NewConfig<PermissionEntity, PermissionDetailResponseDto>()
+            .Map(destination => destination.Id, source => source.Id)
+            .Map(destination => destination.Name, source => source.Name)
+            .Map(destination => destination.Description, source => source.Description)
+            .Map(destination => destination.IsActive, source => source.IsActive)
+            .Map(destination => destination.UserCount, source => source.Users.Count)
+            .Map(
+                destination => destination.Details,
+                source => source.Details.OrderBy(detail => detail.FunctionId).ThenBy(detail => detail.Action));
+
+        config.NewConfig<PermissionDetailEntity, PermissionGrantResponseDto>()
+            .Map(
+                destination => destination.Function,
+                source => new PermissionFunctionResponseDto(
+                    source.Function.Id,
+                    source.Function.Code,
+                    source.Function.NameVi,
+                    source.Function.NameEn))
+            .Map(destination => destination.Action, source => source.Action);
 
         return config;
     }

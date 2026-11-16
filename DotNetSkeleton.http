@@ -4,3 +4,29 @@ GET {{DotNetSkeleton_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+# Admin: Lấy danh sách cấu hình phí kết nối
+GET {{DotNetSkeleton_HostAddress}}/api/v1/admin/connection-fee-settings
+Authorization: Bearer {{admin_token}}
+Accept: application/json
+
+###
+
+# Admin: Tạo cấu hình phí kết nối mới
+POST {{DotNetSkeleton_HostAddress}}/api/v1/admin/connection-fee-settings
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "feeCoin": 15,
+  "effectiveFrom": "2026-11-20T00:00:00+07:00"
+}
+
+###
+
+# User/Public: Lấy phí kết nối hiện hành
+GET {{DotNetSkeleton_HostAddress}}/api/v1/connection-fee-settings/current
+Accept: application/json
+
+###

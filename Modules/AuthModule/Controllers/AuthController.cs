@@ -5,6 +5,7 @@ using DotNetSkeleton.Modules.AuthModule.Exceptions;
 using DotNetSkeleton.Modules.AuthModule.Services.Interfaces;
 using DotNetSkeleton.Shared.Api;
 using DotNetSkeleton.Shared.Controllers;
+using DotNetSkeleton.Shared.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -86,8 +87,8 @@ public sealed class AuthController(IAuthService authService) : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ||
-            !int.TryParse(User.FindFirstValue("session_id"), out var sessionId))
+        var userId = User.GetRequiredUserId();
+        if (!int.TryParse(User.FindFirstValue("session_id"), out var sessionId))
         {
             throw new AuthSessionClaimsInvalidException();
         }
@@ -101,9 +102,7 @@ public sealed class AuthController(IAuthService authService) : ApiControllerBase
     [ProducesResponseType<ApiResponse<UserResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<UserResponseDto>>> Me(CancellationToken cancellationToken)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-            throw new AuthUserClaimsInvalidException();
-
+        var userId = User.GetRequiredUserId();
         return OkResponse(await authService.GetProfileAsync(userId, cancellationToken));
     }
 }

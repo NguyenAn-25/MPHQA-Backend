@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.SkillModule.Entities;
 
 namespace DotNetSkeleton.Modules.JobModule.Entities;
 
@@ -23,5 +24,5 @@ public sealed class JobRequiredSkillEntity
     public int SkillId { get; set; }
 
     [ForeignKey(nameof(SkillId))]
-    public DotNetSkeleton.Modules.ProfileModule.Entities.SkillEntity Skill { get; set; } = null!;
+    public SkillEntity Skill { get; set; } = null!;
 }

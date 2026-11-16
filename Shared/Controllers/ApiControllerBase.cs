@@ -37,6 +37,11 @@ public abstract class ApiControllerBase : ControllerBase
             routeValues,
             ApiResponse<T>.Succeed(data, message, HttpContext.TraceIdentifier));
 
+    protected ActionResult<ApiResponse<T>> CreatedResponse<T>(T data, string? message = null) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            ApiResponse<T>.Succeed(data, message, HttpContext.TraceIdentifier));
+
     protected IActionResult NoContentResponse() => NoContent();
 
     protected IActionResult BadRequestResponse(string message, string code = "bad_request") =>

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DotNetSkeleton.Modules.AuthModule.Entities;
 
 [Table("functions")]
-[Index(nameof(NameEn), IsUnique = true)]
+[Index(nameof(Code), IsUnique = true)]
 public sealed class FunctionEntity
 {
     [Key]
@@ -14,9 +14,14 @@ public sealed class FunctionEntity
     public int Id { get; set; }
 
     [Required]
-    [Column("name_vn")]
+    [Column("code")]
     [MaxLength(100)]
-    public string NameVn { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+
+    [Required]
+    [Column("name_vi")]
+    [MaxLength(100)]
+    public string NameVi { get; set; } = string.Empty;
 
     [Required]
     [Column("name_en")]

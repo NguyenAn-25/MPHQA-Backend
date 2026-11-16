@@ -4,12 +4,23 @@ using DotNetSkeleton.Shared.Configurations;
 using DotNetSkeleton.Shared.Extensions;
 using DotNetSkeleton.Shared.Api;
 using DotNetSkeleton.Modules.AuthModule.Extensions;
+using DotNetSkeleton.Modules.JobModule.Extensions;
+using DotNetSkeleton.Modules.SkillModule.Extensions;
+using DotNetSkeleton.Modules.ProfileModule.Extensions;
+using DotNetSkeleton.Modules.NotificationModule.Extensions;
+using DotNetSkeleton.Modules.ExampleModule.Extensions;
+using DotNetSkeleton.Modules.WalletModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddAuthModule(builder.Configuration, builder.Environment);
+builder.Services.AddJobModule();
+builder.Services.AddSkillModule();
+builder.Services.AddProfileModule();
+builder.Services.AddNotificationModule();
+builder.Services.AddWalletModule();
 builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()
@@ -17,7 +28,7 @@ builder.Services
 
 builder.Services.AddSeeders();
 
-builder.Services.AddApplicationServices();
+builder.Services.AddExampleModule();
 
 var app = builder.Build();
 
@@ -35,7 +46,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Apply pending migrations and run registered seeders in every environment.
-// Development-only fixture seeders enforce their own environment checks.
+// Fixture seeders enforce their own environment and configuration checks.
 await app.SeedDatabaseAsync();
 
 app.MapGet("/", (HttpContext context) =>

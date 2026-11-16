@@ -17,7 +17,9 @@ public class ExampleService : IExampleService
 
     public async Task<IEnumerable<Example>> GetAllAsync()
     {
-        return await _context.Examples.ToListAsync();
+        return await _context.Examples
+            .OrderBy(example => example.Id)
+            .ToListAsync();
     }
 
     public async Task<Example?> GetByIdAsync(int id)

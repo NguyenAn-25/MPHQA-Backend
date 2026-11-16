@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.Entities;
 
@@ -92,7 +93,7 @@ public sealed class JobEntity
 
     [Required]
     [Column("status")]
-    public string Status { get; set; } = "PENDING";
+    public JobStatus Status { get; set; } = JobStatus.Pending;
 
     [Column("required_description", TypeName = "text")]
     public string? RequiredDescription { get; set; }
@@ -102,7 +103,7 @@ public sealed class JobEntity
 
     [Required]
     [Column("pricing_model")]
-    public string PricingModel { get; set; } = string.Empty;
+    public PricingModel PricingModel { get; set; } = PricingModel.TimeBased;
 
     [Required]
     [Column("post_fee_coin")]

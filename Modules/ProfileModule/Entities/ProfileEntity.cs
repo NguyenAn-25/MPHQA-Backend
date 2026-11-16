@@ -50,5 +50,6 @@ public sealed class ProfileEntity
 
     public ProfileIdentityEntity? Identity { get; set; }
     public ICollection<ProfileSkillEntity> ProfileSkills { get; set; } = new List<ProfileSkillEntity>();
+
     public ICollection<ProfileExperienceEntity> Experiences { get; set; } = new List<ProfileExperienceEntity>();
 }
