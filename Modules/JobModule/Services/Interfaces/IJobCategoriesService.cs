@@ -6,6 +6,7 @@ namespace DotNetSkeleton.Modules.JobModule.Services.Interfaces;
 public interface IJobCategoriesService
 {
     Task<PagedJobCategoriesResponseDto> ListAsync(ListJobCategoriesRequestDto request, CancellationToken cancellationToken);
+    Task<IReadOnlyList<CategoryResponseDto>> GetActiveCategoriesAsync(CancellationToken cancellationToken);
     Task<IReadOnlyList<JobCategoryOptionResponseDto>> GetOptionsAsync(CancellationToken cancellationToken);
     Task<JobCategorySummaryResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken);
     Task<JobCategoryDetailResponseDto> CreateAsync(CreateJobCategoryRequestDto request, CancellationToken cancellationToken);

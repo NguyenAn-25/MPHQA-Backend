@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DotNetSkeleton.Shared.Persistence.Migrations
+namespace DotNetSkeleton.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261110062902_InitialCreate")]
+    [Migration("20261116125937_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -135,21 +135,27 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnType("text[]")
                         .HasColumnName("actions");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("code");
+
                     b.Property<string>("NameEn")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name_en");
 
-                    b.Property<string>("NameVn")
+                    b.Property<string>("NameVi")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name_vn");
+                        .HasColumnName("name_vi");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NameEn")
+                    b.HasIndex("Code")
                         .IsUnique();
 
                     b.ToTable("functions");
@@ -202,17 +208,15 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(24)
-                        .HasColumnType("character varying(24)")
-                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
@@ -234,6 +238,14 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("IdentityRejectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("identity_rejected_at");
+
+                    b.Property<DateTimeOffset?>("IdentityVerifiedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("identity_verified_at");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
@@ -344,7 +356,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<int>("UserId")
@@ -506,7 +519,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("PricingModel")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
                         .HasColumnName("pricing_model");
 
                     b.Property<DateTimeOffset?>("RejectedAt")
@@ -532,7 +546,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<DateTimeOffset>("TimeEndAt")
@@ -815,21 +830,31 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
             modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationDetailEntity", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<int>("NotificationId")
                         .HasColumnType("integer")
                         .HasColumnName("notification_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
 
                     b.Property<DateTimeOffset?>("ReadAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("read_at");
 
-                    b.HasKey("NotificationId", "UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("NotificationId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("notification_details");
                 });
@@ -1029,42 +1054,12 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfileId");
-
                     b.HasIndex("SkillId");
 
+                    b.HasIndex("ProfileId", "SkillId")
+                        .IsUnique();
+
                     b.ToTable("profile_skills");
-                });
-
-            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.SkillEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Icon")
-                        .HasColumnType("text")
-                        .HasColumnName("icon");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("skills");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.VerificationRequestEntity", b =>
@@ -1086,6 +1081,10 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("card_front_image");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("FullNameOnCard")
                         .IsRequired()
                         .HasColumnType("text")
@@ -1100,6 +1099,10 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("portrait_image");
+
+                    b.Property<DateTimeOffset?>("RejectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("rejected_at");
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("text")
@@ -1120,7 +1123,12 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("SenderId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_verification_requests_sender_id_pending")
+                        .HasFilter("\"status\" = 'PENDING'");
+
+                    b.HasIndex("Status", "CreatedAt");
 
                     b.ToTable("verification_requests");
                 });
@@ -1179,6 +1187,37 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("reports");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.SkillModule.Entities.SkillEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("skills");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.PaymentMethodEntity", b =>
@@ -1301,12 +1340,14 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .HasColumnName("object_id");
 
                     b.Property<string>("ObjectType")
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("object_type");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("type");
 
                     b.Property<int>("WalletId")
@@ -1405,7 +1446,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 {
                     b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", "Parent")
                         .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -1419,7 +1461,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", "JobCategory")
-                        .WithMany("Jobs")
+                        .WithMany()
                         .HasForeignKey("JobCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1481,8 +1523,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DotNetSkeleton.Modules.ProfileModule.Entities.SkillEntity", "Skill")
-                        .WithMany("JobRequiredSkills")
+                    b.HasOne("DotNetSkeleton.Modules.SkillModule.Entities.SkillEntity", "Skill")
+                        .WithMany()
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1590,7 +1632,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -1599,8 +1641,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
             modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", b =>
                 {
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne()
+                        .HasForeignKey("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1611,7 +1653,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 {
                     b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", "JobCategory")
                         .WithMany()
-                        .HasForeignKey("JobCategoryId");
+                        .HasForeignKey("JobCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("DotNetSkeleton.Modules.ProfileModule.Entities.ProfileEntity", "Profile")
                         .WithMany("Experiences")
@@ -1643,10 +1686,10 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DotNetSkeleton.Modules.ProfileModule.Entities.SkillEntity", "Skill")
-                        .WithMany("ProfileSkills")
+                    b.HasOne("DotNetSkeleton.Modules.SkillModule.Entities.SkillEntity", "Skill")
+                        .WithMany()
                         .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Profile");
@@ -1739,8 +1782,6 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
             modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
                 {
                     b.Navigation("Children");
-
-                    b.Navigation("Jobs");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobEntity", b =>
@@ -1783,13 +1824,6 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Experiences");
 
                     b.Navigation("Identity");
-
-                    b.Navigation("ProfileSkills");
-                });
-
-            modelBuilder.Entity("DotNetSkeleton.Modules.ProfileModule.Entities.SkillEntity", b =>
-                {
-                    b.Navigation("JobRequiredSkills");
 
                     b.Navigation("ProfileSkills");
                 });

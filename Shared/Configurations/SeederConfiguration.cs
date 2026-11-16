@@ -1,4 +1,5 @@
 namespace DotNetSkeleton.Shared.Configurations;
+
 using DotNetSkeleton.Shared.Persistence.Seeders;
 using DotNetSkeleton.Modules.SkillModule.Seeders;
 using DotNetSkeleton.Modules.ProfileModule.Seeders;
@@ -10,12 +11,11 @@ public static class SeederExtensions
     {
         // Seed authorization reference data and shared short-term job taxonomy.
         services.AddScoped<ISeeder, AuthPermissionCatalogSeeder>();
-        services.AddScoped<ISeeder, CategorySeeder>();
+        services.AddScoped<ISeeder, JobCategorySeeder>();
         services.AddScoped<ISeeder, PaymentMethodSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentAdminSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentAdminAccountsSeeder>();
         services.AddScoped<ISeeder, AuthDevelopmentSampleDataSeeder>();
-        services.AddScoped<ISeeder, JobCategorySeeder>();
         services.AddScoped<ISeeder, SkillSeeder>();
         services.AddScoped<ISeeder, ProfileDevelopmentSampleDataSeeder>();
         services.AddScoped<ISeeder, NotificationDevelopmentSampleDataSeeder>();

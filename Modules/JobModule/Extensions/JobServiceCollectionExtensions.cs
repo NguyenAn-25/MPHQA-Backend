@@ -24,7 +24,6 @@ public static class JobServiceCollectionExtensions
             options.JsonSerializerOptions.Converters.Add(new ApplicationStatusJsonConverter());
         });
 
-        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPostPackageService, PostPackageService>();
         services.AddScoped<IConnectionFeeSettingService, ConnectionFeeSettingService>();
         services.AddScoped<IJobService, JobService>();

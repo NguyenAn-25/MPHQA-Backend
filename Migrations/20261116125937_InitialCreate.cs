@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DotNetSkeleton.Shared.Persistence.Migrations
+namespace DotNetSkeleton.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -32,7 +32,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name_vn = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    name_vi = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     name_en = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     actions = table.Column<string[]>(type: "text[]", nullable: false)
                 },
@@ -60,7 +61,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         name: "FK_job_categories_job_categories_parent_id",
                         column: x => x.parent_id,
                         principalTable: "job_categories",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,7 +85,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    status = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
                 },
@@ -163,6 +165,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     verified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    identity_verified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    identity_rejected_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     last_active_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     role = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
@@ -306,10 +310,10 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     expired_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     time_start_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     time_end_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    status = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     required_description = table.Column<string>(type: "text", nullable: true),
                     auto_reply_message = table.Column<string>(type: "text", nullable: true),
-                    pricing_model = table.Column<string>(type: "text", nullable: false),
+                    pricing_model = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: false),
                     post_fee_coin = table.Column<int>(type: "integer", nullable: false),
                     created_by = table.Column<int>(type: "integer", nullable: false),
                     job_category_id = table.Column<int>(type: "integer", nullable: false),
@@ -357,7 +361,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         column: x => x.created_by,
                         principalTable: "user",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -428,7 +432,9 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     portrait_image = table.Column<string>(type: "text", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),
                     rejection_reason = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     verified_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    rejected_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     sender_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -500,7 +506,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    status = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     applied_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     note = table.Column<string>(type: "text", nullable: true),
                     connection_fee_coin = table.Column<int>(type: "integer", nullable: true),
@@ -635,13 +641,15 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 name: "notification_details",
                 columns: table => new
                 {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    read_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     notification_id = table.Column<int>(type: "integer", nullable: false),
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    read_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    user_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_details", x => new { x.notification_id, x.user_id });
+                    table.PrimaryKey("PK_notification_details", x => x.id);
                     table.ForeignKey(
                         name: "FK_notification_details_notifications_notification_id",
                         column: x => x.notification_id,
@@ -677,7 +685,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         name: "FK_profile_experiences_job_categories_job_category_id",
                         column: x => x.job_category_id,
                         principalTable: "job_categories",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_profile_experiences_profiles_profile_id",
                         column: x => x.profile_id,
@@ -730,7 +739,7 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                         column: x => x.skill_id,
                         principalTable: "skills",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -775,9 +784,9 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     coin_amount = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     balance_after = table.Column<int>(type: "integer", nullable: false),
-                    object_type = table.Column<string>(type: "text", nullable: true),
+                    object_type = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
                     object_id = table.Column<int>(type: "integer", nullable: true),
-                    type = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     wallet_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -859,9 +868,9 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 column: "user_b_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_functions_name_en",
+                name: "IX_functions_code",
                 table: "functions",
-                column: "name_en",
+                column: "code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -935,6 +944,12 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 column: "sender_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_notification_details_notification_id_user_id",
+                table: "notification_details",
+                columns: new[] { "notification_id", "user_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_notification_details_user_id",
                 table: "notification_details",
                 column: "user_id");
@@ -972,9 +987,10 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 column: "profile_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_profile_skills_profile_id",
+                name: "IX_profile_skills_profile_id_skill_id",
                 table: "profile_skills",
-                column: "profile_id");
+                columns: new[] { "profile_id", "skill_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_profile_skills_skill_id",
@@ -1025,9 +1041,16 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_verification_requests_sender_id",
+                name: "IX_verification_requests_sender_id_pending",
                 table: "verification_requests",
-                column: "sender_id");
+                column: "sender_id",
+                unique: true,
+                filter: "\"status\" = 'PENDING'");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_verification_requests_status_created_at",
+                table: "verification_requests",
+                columns: new[] { "status", "created_at" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_wallet_transactions_wallet_id",

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DotNetSkeleton.Modules.NotificationModule.Seeders;
 
 public sealed class NotificationDevelopmentSampleDataSeeder(
+    IConfiguration configuration,
     IWebHostEnvironment environment,
     ILogger<NotificationDevelopmentSampleDataSeeder> logger) : ISeeder
 {
@@ -55,7 +56,7 @@ public sealed class NotificationDevelopmentSampleDataSeeder(
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var adminId = await context.Users
