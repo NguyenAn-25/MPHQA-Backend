@@ -56,7 +56,7 @@ public sealed class AuthDevelopmentAdminSeeder(
 
         var adminPermission = await context.Permissions.SingleOrDefaultAsync(
             permission => permission.Name == PermissionConstants.DefaultAdminProfileName &&
-                          permission.Status == PermissionStatus.Active);
+                          permission.IsActive);
         if (adminPermission is null)
         {
             throw new InvalidOperationException(

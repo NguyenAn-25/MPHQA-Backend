@@ -1,12 +1,16 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.NotificationModule.Entities;
 
 [Table("notification_details")]
-[PrimaryKey(nameof(NotificationId), nameof(UserId))]
 public sealed class NotificationDetailEntity
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("id")]
+    public int Id { get; set; }
+
     [Column("read_at")]
     public DateTimeOffset? ReadAt { get; set; }
 

@@ -1,15 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using DotNetSkeleton.Modules.AuthModule.Enums;
+using DotNetSkeleton.Shared.Pagination;
 
 namespace DotNetSkeleton.Modules.AuthModule.DTOs.Requests;
 
-public sealed class ListUsersRequestDto : IValidatableObject
+public sealed class ListUsersRequestDto : OptionalPaginationRequestDto, IValidatableObject
 {
-    [Range(1, int.MaxValue)]
-    public int Page { get; init; } = 1;
-
-    [Range(1, 100)]
-    public int PageSize { get; init; } = 10;
+    protected override int DefaultPageSize => 20;
 
     [MaxLength(20)]
     public string? Search { get; init; }

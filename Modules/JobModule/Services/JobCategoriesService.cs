@@ -8,6 +8,7 @@ using Mapster;
 using DotNetSkeleton.Shared.Extensions;
 using DotNetSkeleton.Shared.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace DotNetSkeleton.Modules.JobModule.Services;
 
@@ -18,6 +19,7 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         CancellationToken cancellationToken)
     {
         var categories = await GetOrderedCategoriesAsync(cancellationToken);
+        var pagination = request.GetPaginationOptions();
         var query = categories.Where(category => category.ParentId == request.ParentId);
         var search = request.Search?.Trim();
         if (!string.IsNullOrWhiteSpace(search))
@@ -27,18 +29,29 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
 
         var matchingCategories = query.ToList();
         var totalCount = matchingCategories.Count;
-        var offset = ((long)request.Page - 1) * request.PageSize;
-        if (offset > int.MaxValue)
-            return new PagedJobCategoriesResponseDto([], request.Page, request.PageSize, totalCount);
+        IReadOnlyList<JobCategoryEntity> pagedCategories = matchingCategories;
+        if (pagination.IsEnabled)
+        {
+            var offset = ((long)pagination.Page - 1) * pagination.PageSize;
+            if (offset > int.MaxValue)
+                return new PagedJobCategoriesResponseDto([], pagination.Page, pagination.PageSize, totalCount);
+
+            pagedCategories = matchingCategories
+                .Skip((int)offset)
+                .Take(pagination.PageSize)
+                .ToArray();
+        }
 
         var childrenByParentId = categories.ToLookup(category => category.ParentId);
-        var items = matchingCategories
-            .Skip((int)offset)
-            .Take(request.PageSize)
+        var items = pagedCategories
             .Select(category => ToSummary(category, childrenByParentId, new HashSet<int>()))
             .ToArray();
 
-        return new PagedJobCategoriesResponseDto(items, request.Page, request.PageSize, totalCount);
+        return new PagedJobCategoriesResponseDto(
+            items,
+            pagination.Page,
+            pagination.IsEnabled ? pagination.PageSize : items.Length,
+            totalCount);
     }
 
     public async Task<IReadOnlyList<JobCategoryOptionResponseDto>> GetOptionsAsync(
@@ -47,14 +60,13 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         var activeCategories = await context.JobCategories
             .AsNoTracking()
             .Where(category => category.IsActive)
-            .OrderBy(category => category.Name)
-            .ThenBy(category => category.Id)
+            .OrderBy(category => category.Id)
             .ToListAsync(cancellationToken);
         var childrenByParentId = activeCategories.ToLookup(category => category.ParentId);
         var options = new List<JobCategoryOptionResponseDto>();
 
         AddOptionsUnderParent(null);
-        return options;
+        return options.OrderBy(option => option.Id).ToArray();
 
         void AddOptionsUnderParent(int? parentId)
         {
@@ -66,16 +78,14 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         }
     }
 
-    public async Task<JobCategoryDetailResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<JobCategorySummaryResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        var category = await context.JobCategories
-            .AsNoTracking()
-            .Include(item => item.Parent)
-            .SingleOrDefaultAsync(item => item.Id == id, cancellationToken)
+        var categories = await GetOrderedCategoriesAsync(cancellationToken);
+        var category = categories.SingleOrDefault(item => item.Id == id)
             ?? throw new JobCategoryNotFoundException();
 
-        var response = category.Adapt<JobCategoryDetailResponseDto>(JobCategoryMappingConfiguration.Config);
-        return response with { ParentName = category.Parent?.Name };
+        var childrenByParentId = categories.ToLookup(item => item.ParentId);
+        return ToSummary(category, childrenByParentId, new HashSet<int>());
     }
 
     public async Task<JobCategoryDetailResponseDto> CreateAsync(
@@ -96,7 +106,7 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         context.JobCategories.Add(category);
         await context.SaveChangesAsync(cancellationToken);
 
-        return await GetByIdAsync(category.Id, cancellationToken);
+        return await GetDetailByIdAsync(category.Id, cancellationToken);
     }
 
     public async Task<JobCategoryDetailResponseDto> UpdateAsync(
@@ -118,7 +128,7 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         category.ParentId = request.ParentId;
         await context.SaveChangesAsync(cancellationToken);
 
-        return await GetByIdAsync(id, cancellationToken);
+        return await GetDetailByIdAsync(id, cancellationToken);
     }
 
     public async Task<JobCategoryDetailResponseDto> UpdateStatusAsync(
@@ -135,7 +145,7 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
         category.IsActive = request.IsActive!.Value;
         await context.SaveChangesAsync(cancellationToken);
 
-        return await GetByIdAsync(id, cancellationToken);
+        return await GetDetailByIdAsync(id, cancellationToken);
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken)
@@ -159,15 +169,47 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
             throw new JobCategoryCannotBeDeletedException();
 
         context.JobCategories.Remove(category);
-        await context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsForeignKeyViolation(exception))
+        {
+            throw new JobCategoryCannotBeDeletedException();
+        }
     }
 
     private async Task<List<JobCategoryEntity>> GetOrderedCategoriesAsync(CancellationToken cancellationToken) =>
         await context.JobCategories
             .AsNoTracking()
-            .OrderBy(category => category.Name)
-            .ThenBy(category => category.Id)
+            .OrderBy(category => category.Id)
             .ToListAsync(cancellationToken);
+
+    private async Task<JobCategoryDetailResponseDto> GetDetailByIdAsync(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var category = await context.JobCategories
+            .AsNoTracking()
+            .Include(item => item.Parent)
+            .SingleOrDefaultAsync(item => item.Id == id, cancellationToken)
+            ?? throw new JobCategoryNotFoundException();
+
+        var response = category.Adapt<JobCategoryDetailResponseDto>(JobCategoryMappingConfiguration.Config);
+        var parent = category.Parent;
+        return response with
+        {
+            Parent = parent is null
+                ? null
+                : new JobCategoryParentResponseDto(
+                    parent.Id,
+                    parent.Name,
+                    parent.Description,
+                    parent.Icon,
+                    parent.IsActive,
+                    parent.ParentId)
+        };
+    }
 
     private async Task ValidateParentAsync(
         int? parentId,
@@ -217,5 +259,8 @@ public sealed class JobCategoriesService(AppDbContext context) : IJobCategoriesS
             Children = children
         };
     }
+
+    private static bool IsForeignKeyViolation(DbUpdateException exception) =>
+        exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation };
 
 }

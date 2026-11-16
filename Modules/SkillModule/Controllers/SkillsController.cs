@@ -12,7 +12,7 @@ namespace DotNetSkeleton.Modules.SkillModule.Controllers;
 [Route("api/v1/skills")]
 public sealed class SkillsController(ISkillsService skillsService) : ApiControllerBase
 {
-    [Authorize(Policy = "permission:skills:read")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:read")]
     [HttpGet]
     [ProducesResponseType<ApiResponse<PagedSkillsResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<PagedSkillsResponseDto>>> List(
@@ -27,7 +27,7 @@ public sealed class SkillsController(ISkillsService skillsService) : ApiControll
         CancellationToken cancellationToken) =>
         OkResponse(await skillsService.GetOptionsAsync(cancellationToken));
 
-    [Authorize(Policy = "permission:skills:read")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:read")]
     [HttpGet("{id:int}")]
     [ProducesResponseType<ApiResponse<SkillDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<SkillDetailResponseDto>>> GetById(
@@ -35,7 +35,7 @@ public sealed class SkillsController(ISkillsService skillsService) : ApiControll
         CancellationToken cancellationToken) =>
         OkResponse(await skillsService.GetByIdAsync(id, cancellationToken));
 
-    [Authorize(Policy = "permission:skills:create")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:create")]
     [HttpPost]
     [ProducesResponseType<ApiResponse<SkillDetailResponseDto>>(StatusCodes.Status201Created)]
     public async Task<ActionResult<ApiResponse<SkillDetailResponseDto>>> Create(
@@ -46,7 +46,7 @@ public sealed class SkillsController(ISkillsService skillsService) : ApiControll
         return CreatedAtActionResponse(nameof(GetById), new { id = skill.Id }, skill);
     }
 
-    [Authorize(Policy = "permission:skills:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:update")]
     [HttpPut("{id:int}")]
     [ProducesResponseType<ApiResponse<SkillDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<SkillDetailResponseDto>>> Update(
@@ -55,7 +55,7 @@ public sealed class SkillsController(ISkillsService skillsService) : ApiControll
         CancellationToken cancellationToken) =>
         OkResponse(await skillsService.UpdateAsync(id, request, cancellationToken));
 
-    [Authorize(Policy = "permission:skills:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:update")]
     [HttpPatch("{id:int}/status")]
     [ProducesResponseType<ApiResponse<SkillDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<SkillDetailResponseDto>>> UpdateStatus(
@@ -64,7 +64,7 @@ public sealed class SkillsController(ISkillsService skillsService) : ApiControll
         CancellationToken cancellationToken) =>
         OkResponse(await skillsService.UpdateStatusAsync(id, request, cancellationToken));
 
-    [Authorize(Policy = "permission:skills:delete")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:skills:delete")]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)

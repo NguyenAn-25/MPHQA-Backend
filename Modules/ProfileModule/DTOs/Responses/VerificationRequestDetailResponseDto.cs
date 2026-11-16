@@ -1,16 +1,17 @@
+using DotNetSkeleton.Modules.ProfileModule.Enums;
+
 namespace DotNetSkeleton.Modules.ProfileModule.DTOs.Responses;
 
 public sealed record VerificationRequestDetailResponseDto(
     int Id,
-    string Status,
     string FullNameOnCard,
     string IdNumber,
     string CardFrontImage,
     string CardBackImage,
     string PortraitImage,
+    VerificationRequestStatus Status,
     string? RejectionReason,
-    DateTimeOffset SubmittedAt,
     DateTimeOffset? VerifiedAt,
     DateTimeOffset? RejectedAt,
-    VerificationRequestSenderDetailResponseDto Sender,
-    VerificationRequestProfileComparisonResponseDto? Profile);
+    DateTimeOffset CreatedAt,
+    VerificationRequestSenderDetailResponseDto Sender);

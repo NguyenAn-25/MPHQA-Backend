@@ -8,6 +8,7 @@ using DotNetSkeleton.Shared.Extensions;
 using DotNetSkeleton.Shared.Persistence;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace DotNetSkeleton.Modules.SkillModule.Services;
 
@@ -18,6 +19,7 @@ public sealed class SkillsService(AppDbContext context) : ISkillsService
         CancellationToken cancellationToken)
     {
         var query = context.Skills.AsNoTracking();
+        var pagination = request.GetPaginationOptions();
         var search = request.Search?.Trim();
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(skill => skill.Name.Contains(search));
@@ -25,27 +27,33 @@ public sealed class SkillsService(AppDbContext context) : ISkillsService
             query = query.Where(skill => skill.IsActive == isActive);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        var offset = ((long)request.Page - 1) * request.PageSize;
-        if (offset > int.MaxValue)
-            return new PagedSkillsResponseDto([], request.Page, request.PageSize, totalCount);
+        IQueryable<SkillEntity> skillsQuery = query
+            .OrderBy(skill => skill.Id);
+        if (pagination.IsEnabled)
+        {
+            var offset = ((long)pagination.Page - 1) * pagination.PageSize;
+            if (offset > int.MaxValue)
+                return new PagedSkillsResponseDto([], pagination.Page, pagination.PageSize, totalCount);
 
-        var skills = await query
-            .OrderBy(skill => skill.Name)
-            .ThenBy(skill => skill.Id)
-            .Skip((int)offset)
-            .Take(request.PageSize)
+            skillsQuery = skillsQuery.Skip((int)offset).Take(pagination.PageSize);
+        }
+
+        var skills = await skillsQuery
             .ProjectToType<SkillSummaryResponseDto>(SkillMappingConfiguration.Config)
             .ToListAsync(cancellationToken);
 
-        return new PagedSkillsResponseDto(skills, request.Page, request.PageSize, totalCount);
+        return new PagedSkillsResponseDto(
+            skills,
+            pagination.Page,
+            pagination.IsEnabled ? pagination.PageSize : skills.Count,
+            totalCount);
     }
 
     public async Task<IReadOnlyList<SkillOptionResponseDto>> GetOptionsAsync(CancellationToken cancellationToken) =>
         await context.Skills
             .AsNoTracking()
             .Where(skill => skill.IsActive)
-            .OrderBy(skill => skill.Name)
-            .ThenBy(skill => skill.Id)
+            .OrderBy(skill => skill.Id)
             .ProjectToType<SkillOptionResponseDto>(SkillMappingConfiguration.Config)
             .ToListAsync(cancellationToken);
 
@@ -136,6 +144,16 @@ public sealed class SkillsService(AppDbContext context) : ISkillsService
             throw new SkillCannotBeDeletedException();
 
         context.Skills.Remove(skill);
-        await context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsForeignKeyViolation(exception))
+        {
+            throw new SkillCannotBeDeletedException();
+        }
     }
+
+    private static bool IsForeignKeyViolation(DbUpdateException exception) =>
+        exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation };
 }

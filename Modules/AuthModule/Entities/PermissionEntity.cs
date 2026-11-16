@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DotNetSkeleton.Modules.AuthModule.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.AuthModule.Entities;
@@ -15,8 +14,8 @@ public sealed class PermissionEntity
     public int Id { get; set; }
 
     [Required]
-    [Column("status")]
-    public PermissionStatus Status { get; set; } = PermissionStatus.Active;
+    [Column("is_active")]
+    public bool IsActive { get; set; } = true;
 
     [Required]
     [Column("name")]

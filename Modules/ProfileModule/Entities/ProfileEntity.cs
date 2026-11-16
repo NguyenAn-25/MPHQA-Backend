@@ -49,9 +49,7 @@ public sealed class ProfileEntity
     public DotNetSkeleton.Modules.AuthModule.Entities.UserEntity User { get; set; } = null!;
 
     public ProfileIdentityEntity? Identity { get; set; }
-    [NotMapped]
     public ICollection<ProfileSkillEntity> ProfileSkills { get; set; } = new List<ProfileSkillEntity>();
 
-    [NotMapped]
     public ICollection<ProfileExperienceEntity> Experiences { get; set; } = new List<ProfileExperienceEntity>();
 }

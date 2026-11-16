@@ -10,4 +10,4 @@ public sealed record UserSummaryResponseDto(
     bool IsVerified,
     DateTimeOffset CreatedAt,
     UserRole Role,
-    PermissionSummaryResponseDto? Permission);
+    UserPermissionSummaryResponseDto? Permission);

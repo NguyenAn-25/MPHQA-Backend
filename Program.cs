@@ -7,6 +7,7 @@ using DotNetSkeleton.Modules.AuthModule.Extensions;
 using DotNetSkeleton.Modules.JobModule.Extensions;
 using DotNetSkeleton.Modules.SkillModule.Extensions;
 using DotNetSkeleton.Modules.ProfileModule.Extensions;
+using DotNetSkeleton.Modules.NotificationModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddAuthModule(builder.Configuration, builder.Environment);
 builder.Services.AddJobModule();
 builder.Services.AddSkillModule();
 builder.Services.AddProfileModule();
+builder.Services.AddNotificationModule();
 builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()
