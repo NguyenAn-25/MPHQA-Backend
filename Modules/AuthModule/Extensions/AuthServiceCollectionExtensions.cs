@@ -23,6 +23,8 @@ public static class AuthServiceCollectionExtensions
         services.AddScoped<AuthTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUsersService, UserService>();
+        services.AddScoped<IPermissionsService, PermissionsService>();
+        services.AddScoped<IFunctionsService, FunctionsService>();
 
         services.AddOtpSms(configuration, environment);
         services.ConfigureHttpJsonOptions(options => AddEnumJsonConverters(options.SerializerOptions));
@@ -36,7 +38,6 @@ public static class AuthServiceCollectionExtensions
     private static void AddEnumJsonConverters(System.Text.Json.JsonSerializerOptions options)
     {
         options.Converters.Add(new OtpPurposeJsonConverter());
-        options.Converters.Add(new PermissionStatusJsonConverter());
         options.Converters.Add(new UserRoleJsonConverter());
     }
 }

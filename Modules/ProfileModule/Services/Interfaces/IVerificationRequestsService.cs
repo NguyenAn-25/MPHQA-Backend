@@ -8,6 +8,14 @@ public interface IVerificationRequestsService
     Task<PagedVerificationRequestsResponseDto> ListAsync(
         ListVerificationRequestsRequestDto request,
         CancellationToken cancellationToken);
+    Task<PagedVerificationRequestsResponseDto> ListMineAsync(
+        int senderId,
+        ListVerificationRequestsRequestDto request,
+        CancellationToken cancellationToken);
+    Task<VerificationRequestDetailResponseDto> CreateAsync(
+        int senderId,
+        CreateVerificationRequestRequestDto request,
+        CancellationToken cancellationToken);
     Task<VerificationRequestDetailResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken);
     Task<VerificationRequestDetailResponseDto> UpdateStatusAsync(
         int id,

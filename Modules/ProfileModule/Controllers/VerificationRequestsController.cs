@@ -5,6 +5,7 @@ using DotNetSkeleton.Modules.ProfileModule.Exceptions;
 using DotNetSkeleton.Modules.ProfileModule.Services.Interfaces;
 using DotNetSkeleton.Shared.Api;
 using DotNetSkeleton.Shared.Controllers;
+using DotNetSkeleton.Shared.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,18 @@ namespace DotNetSkeleton.Modules.ProfileModule.Controllers;
 public sealed class VerificationRequestsController(IVerificationRequestsService verificationRequestsService)
     : ApiControllerBase
 {
-    [Authorize(Policy = "permission:verification_requests:read")]
+    [Authorize(Roles = "USER")]
+    [HttpPost]
+    [ProducesResponseType<ApiResponse<VerificationRequestDetailResponseDto>>(StatusCodes.Status201Created)]
+    public async Task<ActionResult<ApiResponse<VerificationRequestDetailResponseDto>>> Create(
+        CreateVerificationRequestRequestDto request,
+        CancellationToken cancellationToken) =>
+        CreatedResponse(await verificationRequestsService.CreateAsync(
+            User.GetRequiredUserId(),
+            request,
+            cancellationToken));
+
+    [Authorize(Roles = "ADMIN", Policy = "permission:verification_requests:read")]
     [HttpGet]
     [ProducesResponseType<ApiResponse<PagedVerificationRequestsResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<PagedVerificationRequestsResponseDto>>> List(
@@ -23,7 +35,18 @@ public sealed class VerificationRequestsController(IVerificationRequestsService 
         CancellationToken cancellationToken) =>
         OkResponse(await verificationRequestsService.ListAsync(request, cancellationToken));
 
-    [Authorize(Policy = "permission:verification_requests:read")]
+    [Authorize(Roles = "USER")]
+    [HttpGet("me")]
+    [ProducesResponseType<ApiResponse<PagedVerificationRequestsResponseDto>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<PagedVerificationRequestsResponseDto>>> ListMine(
+        [FromQuery] ListVerificationRequestsRequestDto request,
+        CancellationToken cancellationToken) =>
+        OkResponse(await verificationRequestsService.ListMineAsync(
+            User.GetRequiredUserId(),
+            request,
+            cancellationToken));
+
+    [Authorize(Roles = "ADMIN", Policy = "permission:verification_requests:read")]
     [HttpGet("{id:int}")]
     [ProducesResponseType<ApiResponse<VerificationRequestDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<VerificationRequestDetailResponseDto>>> GetById(
@@ -31,7 +54,7 @@ public sealed class VerificationRequestsController(IVerificationRequestsService 
         CancellationToken cancellationToken) =>
         OkResponse(await verificationRequestsService.GetByIdAsync(id, cancellationToken));
 
-    [Authorize(Policy = "permission:verification_requests:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:verification_requests:update")]
     [HttpPatch("{id:int}/status")]
     [ProducesResponseType<ApiResponse<VerificationRequestDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<VerificationRequestDetailResponseDto>>> UpdateStatus(

@@ -12,7 +12,7 @@ namespace DotNetSkeleton.Modules.AuthModule.Controllers;
 [Route("api/v1/users")]
 public sealed class UsersController(IUsersService usersService) : ApiControllerBase
 {
-    [Authorize(Policy = "permission:users:read")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:read")]
     [HttpGet]
     [ProducesResponseType<ApiResponse<PagedUsersResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<PagedUsersResponseDto>>> List(
@@ -20,7 +20,7 @@ public sealed class UsersController(IUsersService usersService) : ApiControllerB
         CancellationToken cancellationToken) =>
         OkResponse(await usersService.ListAsync(request, cancellationToken));
 
-    [Authorize(Policy = "permission:users:read")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:read")]
     [HttpGet("{id:int}")]
     [ProducesResponseType<ApiResponse<UserDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<UserDetailResponseDto>>> GetById(
@@ -28,7 +28,7 @@ public sealed class UsersController(IUsersService usersService) : ApiControllerB
         CancellationToken cancellationToken) =>
         OkResponse(await usersService.GetByIdAsync(id, cancellationToken));
 
-    [Authorize(Policy = "permission:users:create")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:create")]
     [HttpPost]
     [ProducesResponseType<ApiResponse<UserDetailResponseDto>>(StatusCodes.Status201Created)]
     public async Task<ActionResult<ApiResponse<UserDetailResponseDto>>> Create(
@@ -39,7 +39,7 @@ public sealed class UsersController(IUsersService usersService) : ApiControllerB
         return CreatedAtActionResponse(nameof(GetById), new { id = user.Id }, user);
     }
 
-    [Authorize(Policy = "permission:users:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:update")]
     [HttpPut("{id:int}")]
     [ProducesResponseType<ApiResponse<UserDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<UserDetailResponseDto>>> Update(
@@ -48,7 +48,7 @@ public sealed class UsersController(IUsersService usersService) : ApiControllerB
         CancellationToken cancellationToken) =>
         OkResponse(await usersService.UpdateAsync(id, request, cancellationToken));
 
-    [Authorize(Policy = "permission:users:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:update")]
     [HttpPut("{id:int}/password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdatePassword(
@@ -60,7 +60,7 @@ public sealed class UsersController(IUsersService usersService) : ApiControllerB
         return NoContentResponse();
     }
 
-    [Authorize(Policy = "permission:users:update")]
+    [Authorize(Roles = "ADMIN", Policy = "permission:users:update")]
     [HttpPatch("{id:int}/status")]
     [ProducesResponseType<ApiResponse<UserDetailResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<UserDetailResponseDto>>> UpdateStatus(

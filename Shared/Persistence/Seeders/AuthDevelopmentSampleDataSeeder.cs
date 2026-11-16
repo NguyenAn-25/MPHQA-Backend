@@ -18,7 +18,7 @@ public sealed class AuthDevelopmentSampleDataSeeder(
     IPasswordHasher<UserEntity> passwordHasher,
     ILogger<AuthDevelopmentSampleDataSeeder> logger) : ISeeder
 {
-    private const int SampleUserCount = 24;
+    private const int SampleUserCount = 60;
     private const string SamplePassword = "123456";
 
     public int Order => 4;
@@ -56,8 +56,8 @@ public sealed class AuthDevelopmentSampleDataSeeder(
             }
 
             var createdAt = now.AddDays(-30 - index);
-            var isActive = index < 16;
-            var isPendingRegistration = index is >= 16 and < 20;
+            var isActive = index < 36;
+            var isPendingRegistration = index is >= 36 and < 44;
             var user = new UserEntity
             {
                 PublicId = StableGuid($"development-sample-user:{phone}"),

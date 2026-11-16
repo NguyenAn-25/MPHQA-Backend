@@ -1,39 +1,46 @@
 using DotNetSkeleton.Modules.AuthModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Constants;
-using DotNetSkeleton.Modules.AuthModule.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Shared.Persistence.Seeders;
 
 public sealed class AuthPermissionCatalogSeeder : ISeeder
 {
-    private static readonly (string NameVn, string NameEn, string[] Actions)[] FunctionCatalog =
+    private static readonly (string Code, string NameVi, string NameEn, string[] Actions)[] FunctionCatalog =
     [
         // Keep this catalog aligned with the permission policies on implemented endpoints.
-        ("Quản lý người dùng", "users", ["read", "create", "update"]),
-        ("Quản lý lĩnh vực", "job_categories", ["read", "create", "update", "delete"]),
-        ("Quản lý kỹ năng", "skills", ["read", "create", "update", "delete"]),
-        ("Xử lý yêu cầu xác thực", "verification_requests", ["read", "update"])
+        ("USERS", "Quản lý người dùng", "User Management", ["READ", "CREATE", "UPDATE"]),
+        ("JOB_CATEGORIES", "Quản lý lĩnh vực", "Job Category Management", ["READ", "CREATE", "UPDATE", "DELETE"]),
+        ("SKILLS", "Quản lý kỹ năng", "Skill Management", ["READ", "CREATE", "UPDATE", "DELETE"]),
+        ("VERIFICATION_REQUESTS", "Xử lý yêu cầu xác thực", "Verification Request Management", ["READ", "UPDATE"]),
+        ("NOTIFICATIONS", "Quản lý thông báo", "Notification Management", ["READ", "CREATE"]),
+        ("PERMISSIONS", "Quản lý nhóm quyền", "Permission Management", ["READ", "CREATE", "UPDATE", "DELETE"])
     ];
 
     private static readonly (string Function, string Action)[] InitialAdminGrants =
     [
-        ("users", "read"),
-        ("users", "create"),
-        ("users", "update"),
-        ("job_categories", "read"),
-        ("job_categories", "create"),
-        ("job_categories", "update"),
-        ("job_categories", "delete"),
-        ("skills", "read"),
-        ("skills", "create"),
-        ("skills", "update"),
-        ("skills", "delete"),
-        ("verification_requests", "read"),
-        ("verification_requests", "update")
+        ("USERS", "READ"),
+        ("USERS", "CREATE"),
+        ("USERS", "UPDATE"),
+        ("JOB_CATEGORIES", "READ"),
+        ("JOB_CATEGORIES", "CREATE"),
+        ("JOB_CATEGORIES", "UPDATE"),
+        ("JOB_CATEGORIES", "DELETE"),
+        ("SKILLS", "READ"),
+        ("SKILLS", "CREATE"),
+        ("SKILLS", "UPDATE"),
+        ("SKILLS", "DELETE"),
+        ("VERIFICATION_REQUESTS", "READ"),
+        ("VERIFICATION_REQUESTS", "UPDATE"),
+        ("NOTIFICATIONS", "READ"),
+        ("NOTIFICATIONS", "CREATE"),
+        ("PERMISSIONS", "READ"),
+        ("PERMISSIONS", "CREATE"),
+        ("PERMISSIONS", "UPDATE"),
+        ("PERMISSIONS", "DELETE")
     ];
 
-    private static readonly string[] RetiredFunctionNames = ["auth", "permissions"];
+    private static readonly string[] RetiredFunctionCodes = ["AUTH", "PERMISSION_PROFILES"];
 
     public int Order => 1;
 
@@ -44,12 +51,13 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
         foreach (var definition in FunctionCatalog)
         {
             var function = await context.Functions
-                .SingleOrDefaultAsync(x => x.NameEn == definition.NameEn);
+                .SingleOrDefaultAsync(x => x.Code == definition.Code);
             if (function is null)
             {
                 function = new FunctionEntity
                 {
-                    NameVn = definition.NameVn,
+                    Code = definition.Code,
+                    NameVi = definition.NameVi,
                     NameEn = definition.NameEn,
                     Actions = definition.Actions
                 };
@@ -58,11 +66,12 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
             }
             else
             {
-                function.NameVn = definition.NameVn;
+                function.NameVi = definition.NameVi;
+                function.NameEn = definition.NameEn;
                 function.Actions = definition.Actions;
             }
 
-            functions.Add(definition.NameEn, function);
+            functions.Add(definition.Code, function);
         }
 
         var adminPermissionWasCreated = !await context.Permissions
@@ -81,20 +90,20 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
             .Include(detail => detail.Function)
             .ToListAsync();
         var supportedActions = FunctionCatalog.ToDictionary(
-            definition => definition.NameEn,
+            definition => definition.Code,
             definition => definition.Actions,
             StringComparer.OrdinalIgnoreCase);
         context.PermissionDetails.RemoveRange(obsoleteGrants.Where(detail =>
-            RetiredFunctionNames.Any(name =>
-                string.Equals(name, detail.Function.NameEn, StringComparison.OrdinalIgnoreCase)) ||
-            (supportedActions.TryGetValue(detail.Function.NameEn, out var actions) &&
+            RetiredFunctionCodes.Any(code =>
+                string.Equals(code, detail.Function.Code, StringComparison.OrdinalIgnoreCase)) ||
+            (supportedActions.TryGetValue(detail.Function.Code, out var actions) &&
              !actions.Any(action => string.Equals(
                  action,
                  detail.Action,
                  StringComparison.OrdinalIgnoreCase)))));
 
         var retiredFunctions = await context.Functions
-            .Where(function => RetiredFunctionNames.Contains(function.NameEn))
+            .Where(function => RetiredFunctionCodes.Contains(function.Code))
             .ToListAsync();
         context.Functions.RemoveRange(retiredFunctions);
 
@@ -127,7 +136,7 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
             return permission;
         }
 
-        permission = new PermissionEntity { Name = name, Status = PermissionStatus.Active, Description = description };
+        permission = new PermissionEntity { Name = name, IsActive = true, Description = description };
         context.Permissions.Add(permission);
         onAdded();
         return permission;

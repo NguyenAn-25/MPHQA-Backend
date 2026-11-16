@@ -1,29 +1,24 @@
 using System.ComponentModel.DataAnnotations;
+using DotNetSkeleton.Modules.ProfileModule.Enums;
+using DotNetSkeleton.Shared.Pagination;
 
 namespace DotNetSkeleton.Modules.ProfileModule.DTOs.Requests;
 
-public sealed class ListVerificationRequestsRequestDto : IValidatableObject
+public sealed class ListVerificationRequestsRequestDto : OptionalPaginationRequestDto, IValidatableObject
 {
-    [Range(1, int.MaxValue)]
-    public int Page { get; init; } = 1;
+    public VerificationRequestStatus? Status { get; init; }
 
-    [Range(1, 100)]
-    public int PageSize { get; init; } = 10;
+    public DateTimeOffset? CreatedFrom { get; init; }
 
-    [RegularExpression("^(PENDING|ACCEPTED|REJECTED|CANCELLED)$")]
-    public string? Status { get; init; }
-
-    public DateTimeOffset? SubmittedFrom { get; init; }
-
-    public DateTimeOffset? SubmittedTo { get; init; }
+    public DateTimeOffset? CreatedTo { get; init; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (SubmittedFrom is not null && SubmittedTo is not null && SubmittedFrom > SubmittedTo)
+        if (CreatedFrom is not null && CreatedTo is not null && CreatedFrom > CreatedTo)
         {
             yield return new ValidationResult(
-                "submittedFrom phải nhỏ hơn hoặc bằng submittedTo.",
-                [nameof(SubmittedFrom), nameof(SubmittedTo)]);
+                "createdFrom phải nhỏ hơn hoặc bằng createdTo.",
+                [nameof(CreatedFrom), nameof(CreatedTo)]);
         }
     }
 }

@@ -27,7 +27,7 @@ public static class JobCategoryMappingConfiguration
             .Map(destination => destination.Icon, source => source.Icon)
             .Map(destination => destination.IsActive, source => source.IsActive)
             .Map(destination => destination.ParentId, source => source.ParentId)
-            .Map(destination => destination.ParentName, _ => (string?)null);
+            .Map(destination => destination.Parent, _ => (JobCategoryParentResponseDto?)null);
 
         return config;
     }

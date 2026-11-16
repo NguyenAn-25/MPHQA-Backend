@@ -22,6 +22,7 @@ public sealed class UserService(
         CancellationToken cancellationToken)
     {
         var query = context.Users.AsNoTracking();
+        var pagination = request.GetPaginationOptions();
         var search = request.Search?.Trim();
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(user => user.Phone.Contains(search));
@@ -39,19 +40,26 @@ public sealed class UserService(
             query = query.Where(user => user.CreatedAt <= createdTo);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        var offset = ((long)request.Page - 1) * request.PageSize;
-        if (offset > int.MaxValue)
-            return new PagedUsersResponseDto([], request.Page, request.PageSize, totalCount);
+        IQueryable<UserEntity> usersQuery = query
+            .OrderBy(user => user.Id);
+        if (pagination.IsEnabled)
+        {
+            var offset = ((long)pagination.Page - 1) * pagination.PageSize;
+            if (offset > int.MaxValue)
+                return new PagedUsersResponseDto([], pagination.Page, pagination.PageSize, totalCount);
 
-        var users = await query
-            .OrderByDescending(user => user.CreatedAt)
-            .ThenBy(user => user.Id)
-            .Skip((int)offset)
-            .Take(request.PageSize)
+            usersQuery = usersQuery.Skip((int)offset).Take(pagination.PageSize);
+        }
+
+        var users = await usersQuery
             .ProjectToType<UserSummaryResponseDto>(AuthMappingConfiguration.Config)
             .ToListAsync(cancellationToken);
 
-        return new PagedUsersResponseDto(users, request.Page, request.PageSize, totalCount);
+        return new PagedUsersResponseDto(
+            users,
+            pagination.Page,
+            pagination.IsEnabled ? pagination.PageSize : users.Count,
+            totalCount);
     }
 
     public async Task<UserDetailResponseDto> GetByIdAsync(
@@ -183,7 +191,7 @@ public sealed class UserService(
         CancellationToken cancellationToken)
     {
         var permission = await context.Permissions.SingleOrDefaultAsync(
-            permission => permission.Id == permissionId && permission.Status == PermissionStatus.Active,
+            permission => permission.Id == permissionId && permission.IsActive,
             cancellationToken);
 
         return permission ?? throw new AuthUserPermissionUnavailableException();

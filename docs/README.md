@@ -1,6 +1,6 @@
 # Tài liệu hệ thống
 
-Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Nghiệp vụ xác thực, quản lý user và permission nằm trong [AuthModule](auth-module/README.md); quản lý lĩnh vực nằm trong [JobModule](job-module/job-categories.md); danh mục kỹ năng dùng chung nằm trong [SkillModule](skill-module/skills.md); admin xử lý yêu cầu xác thực thuộc [ProfileModule](profile-module/verification-requests.md).
+Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Nghiệp vụ xác thực, quản lý user và permission nằm trong [AuthModule](auth-module/README.md); quản lý lĩnh vực nằm trong [JobModule](job-module/job-categories.md); danh mục kỹ năng dùng chung nằm trong [SkillModule](skill-module/skills.md); hồ sơ cá nhân và yêu cầu xác thực thuộc [ProfileModule](profile-module/profile.md); gửi thông báo quản trị nằm trong [NotificationModule](notification-module/notifications.md).
 
 ## Tài liệu toàn hệ thống
 
@@ -31,7 +31,12 @@ Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành ph�
 
 ## Tài liệu ProfileModule
 
+- [Hồ sơ cá nhân, kinh nghiệm và kỹ năng](profile-module/profile.md)
 - [Admin xử lý yêu cầu xác thực](profile-module/verification-requests.md)
+
+## Tài liệu NotificationModule
+
+- [Quản lý và gửi thông báo](notification-module/notifications.md)
 
 ## Bắt đầu nhanh
 

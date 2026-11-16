@@ -7,4 +7,4 @@ public sealed record JobCategoryDetailResponseDto(
     string? Icon,
     bool IsActive,
     int? ParentId,
-    string? ParentName);
+    JobCategoryParentResponseDto? Parent);

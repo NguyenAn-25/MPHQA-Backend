@@ -4,7 +4,7 @@ public sealed record VerificationRequestSenderDetailResponseDto(
     int Id,
     Guid PublicId,
     string Phone,
-    bool IsActive,
-    bool IsPhoneVerified,
-    DateTimeOffset? IdentityVerifiedAt,
-    DateTimeOffset? IdentityRejectedAt);
+    bool IsVerified,
+    DateTimeOffset? VerifiedAt,
+    VerificationRequestSenderProfileResponseDto? Profile,
+    VerificationRequestIdentityResponseDto? CurrentIdentity);

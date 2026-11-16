@@ -34,13 +34,13 @@ public sealed class AuthTokenService(IOptions<JwtOptions> options)
         };
 
         // Permission profiles contain the fine-grained grants for ADMIN users only.
-        if (user.Role == UserRole.Admin && user.Permission is { Status: PermissionStatus.Active } permission)
+        if (user.Role == UserRole.Admin && user.Permission is { IsActive: true } permission)
         {
             foreach (var detail in permission.Details)
             {
                 claims.Add(new Claim(
                     PermissionConstants.PermissionClaim,
-                    $"{detail.Function.NameEn.ToLowerInvariant()}:{detail.Action.ToLowerInvariant()}"));
+                    $"{detail.Function.Code.ToLowerInvariant()}:{detail.Action.ToLowerInvariant()}"));
             }
         }
 

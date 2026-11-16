@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.NotificationModule.Enums;
 
 namespace DotNetSkeleton.Modules.NotificationModule.Entities;
 
@@ -25,7 +26,7 @@ public sealed class NotificationEntity
 
     [Required]
     [Column("send_to")]
-    public string SendTo { get; set; } = string.Empty;
+    public NotificationSendTo SendTo { get; set; } = NotificationSendTo.All;
 
     [Required]
     [Column("created_by")]

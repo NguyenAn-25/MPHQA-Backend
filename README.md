@@ -188,7 +188,7 @@ OTP được lưu dạng hash. Trong Development, SMS đang tạm tắt; OTP dù
 | `POST` | `/api/v1/auth/password/reset` | Đặt password mới sau khi OTP đã xác minh |
 | `GET` | `/api/v1/auth/me` | Lấy hồ sơ của chính mình; cần Bearer token |
 
-Quản lý user cần permission tương ứng; role `admin` được seed với các quyền `users:read`, `users:create` và `users:update`:
+Các API quản trị cần role `ADMIN` cùng permission tương ứng. Riêng `GET /api/v1/functions` chỉ cần role `ADMIN`. Profile `ADMIN_DEFAULT` được seed với quyền quản lý user và nhóm quyền, cùng các function catalog của lĩnh vực, kỹ năng và xác thực:
 
 | Method | Endpoint | Permission | Mục đích |
 |---|---|---|---|
@@ -198,8 +198,18 @@ Quản lý user cần permission tương ứng; role `admin` được seed với
 | `PUT` | `/api/v1/users/{id}` | `users:update` | Đổi permission profile |
 | `PUT` | `/api/v1/users/{id}/password` | `users:update` | Đổi password và thu hồi session |
 | `PATCH` | `/api/v1/users/{id}/status` | `users:update` | Bật/tắt user |
+| `GET` | `/api/v1/functions` | Role `ADMIN` | Lấy catalog chức năng và action |
+| `GET` | `/api/v1/permissions` | `permissions:read` | Lấy danh sách nhóm quyền |
+| `GET` | `/api/v1/permissions/{id}` | `permissions:read` | Xem nhóm quyền và các grant |
+| `POST` | `/api/v1/permissions` | `permissions:create` | Tạo nhóm quyền |
+| `PUT` | `/api/v1/permissions/{id}` | `permissions:update` | Cập nhật nhóm quyền và grant |
+| `PATCH` | `/api/v1/permissions/{id}/status` | `permissions:update` | Bật/tắt nhóm quyền |
+| `DELETE` | `/api/v1/permissions/{id}` | `permissions:delete` | Xóa nhóm quyền chưa được sử dụng |
+| `GET` | `/api/v1/notifications` | `notifications:read` | Lấy thông báo đã gửi kèm người tạo |
+| `GET` | `/api/v1/notifications/{id}` | `notifications:read` | Xem nội dung và người nhận/readAt |
+| `POST` | `/api/v1/notifications` | `notifications:create` | Tạo và gửi thông báo cho nhóm hoặc một user |
 
-API quản lý do admin thao tác và liệt kê toàn bộ tài khoản `USER` lẫn `ADMIN`; danh sách trả summary gọn, còn xem theo `id` trả detail. Các luồng quản trị dùng ID nội bộ dạng số; `publicId` vẫn có trong response để dùng ở các luồng công khai. Hỗ trợ lọc theo phone (`search`), role, trạng thái active/verified, permission profile và khoảng ngày tạo. Khi tạo, admin gửi phone chưa được sử dụng, password mạnh và `permissionId`; hệ thống tạo tài khoản `ADMIN` active/verified trực tiếp, không gửi OTP. Tạo thành công trả `201 Created`. Khi cập nhật, chỉ đổi permission (chỉ áp dụng cho tài khoản `ADMIN`); đổi permission hoặc password sẽ thu hồi session hiện có. Permission trong response được nhóm thành object `permission`; summary có `id`, `name`, detail bổ sung `description`, `status`. `verifiedAt` ghi thời điểm xác minh tài khoản; thời điểm xác minh từng OTP challenge vẫn nằm trên bản ghi OTP.
+API quản lý do admin thao tác và liệt kê toàn bộ tài khoản `USER` lẫn `ADMIN`; danh sách trả summary gọn, còn xem theo `id` trả detail. Các luồng quản trị dùng ID nội bộ dạng số; `publicId` vẫn có trong response để dùng ở các luồng công khai. Hỗ trợ lọc theo phone (`search`), role, trạng thái active/verified, permission và khoảng ngày tạo. Khi tạo, admin gửi phone chưa được sử dụng, password mạnh và `permissionId`; hệ thống tạo tài khoản `ADMIN` active/verified trực tiếp, không gửi OTP. Tạo thành công trả `201 Created`. Khi cập nhật, chỉ đổi permission (chỉ áp dụng cho tài khoản `ADMIN`); đổi permission hoặc password sẽ thu hồi session hiện có. Permission trong response được nhóm thành object `permission`; summary có `id`, `name`, detail bổ sung `description`, `isActive`. `verifiedAt` ghi thời điểm xác minh tài khoản; thời điểm xác minh từng OTP challenge vẫn nằm trên bản ghi OTP.
 
 Ví dụ đăng ký:
 
@@ -436,12 +446,13 @@ dotnet tool run dotnet-ef -- migrations remove
 Khi chạy ở môi trường `Development`, ứng dụng sẽ:
 
 1. Tự động chạy các migration chưa được áp dụng.
-2. Chạy `AuthPermissionCatalogSeeder` để đồng bộ function `users` và profile quyền `ADMIN_DEFAULT`. Grant ban đầu chỉ được tạo một lần.
+2. Chạy `AuthPermissionCatalogSeeder` để đồng bộ catalog function và profile quyền `ADMIN_DEFAULT`. Grant ban đầu chỉ được tạo một lần.
 3. Chạy `AuthDevelopmentAdminAccountsSeeder` để tạo hai tài khoản ADMIN giả lập, chỉ dùng local.
 4. Chạy `AuthDevelopmentAdminSeeder` nếu có cấu hình thêm `Seed:AdminPhone` và `Seed:AdminPassword` trong User Secrets.
-5. Chạy `AuthDevelopmentSampleDataSeeder` để thêm 24 user thường giả lập, 44 OTP và 40 session lịch sử.
+5. Chạy `AuthDevelopmentSampleDataSeeder` để thêm tối đa 60 user thường giả lập và dữ liệu OTP/session.
+6. Chạy `ProfileDevelopmentSampleDataSeeder` để bổ sung hồ sơ, kinh nghiệm, kỹ năng và yêu cầu xác thực mẫu liên kết với user.
 
-Hai tài khoản ADMIN local dùng số `+12025550190`, `+12025550191`, mật khẩu `123456`; đăng nhập bằng số điện thoại và mật khẩu này. Đây là thông tin cố định chỉ dành cho môi trường Development, không dùng cho Production. Có thể cấu hình thêm một admin riêng qua User Secrets; seeder này cũng chỉ chạy trong Development và bỏ qua xác minh OTP. Các user thường mẫu dùng số điện thoại giả lập `+12025550100`–`+12025550123` và mật khẩu `123456`; 16 user active có thể đăng nhập, còn tài khoản chờ xác minh/đã tắt thì không. OTP/session mẫu đều hết hạn. Production không chạy các seeder dữ liệu này.
+Hai tài khoản ADMIN local dùng số `+12025550190`, `+12025550191`, mật khẩu `123456`; đăng nhập bằng số điện thoại và mật khẩu này. Đây là thông tin cố định chỉ dành cho môi trường Development, không dùng cho Production. Có thể cấu hình thêm một admin riêng qua User Secrets; seeder này cũng chỉ chạy trong Development và bỏ qua xác minh OTP. User thường mẫu dùng dải số giả lập `+12025550100`–`+12025550159` với mật khẩu `123456`; trên database mới 36 user active có thể đăng nhập. OTP/session mẫu đều hết hạn. Production không chạy các seeder dữ liệu này.
 
 Tạo seeder mới bằng cách implement `ISeeder`:
 

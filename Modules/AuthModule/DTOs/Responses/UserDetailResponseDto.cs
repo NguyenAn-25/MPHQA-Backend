@@ -12,4 +12,4 @@ public sealed record UserDetailResponseDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastActiveAt,
     UserRole Role,
-    PermissionDetailResponseDto? Permission);
+    UserPermissionDetailResponseDto? Permission);

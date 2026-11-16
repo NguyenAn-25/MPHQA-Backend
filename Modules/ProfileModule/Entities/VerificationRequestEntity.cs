@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.ProfileModule.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.ProfileModule.Entities;
@@ -35,7 +36,7 @@ public sealed class VerificationRequestEntity
 
     [Required]
     [Column("status")]
-    public string Status { get; set; } = VerificationRequestStatuses.Pending;
+    public VerificationRequestStatus Status { get; set; } = VerificationRequestStatus.Pending;
 
     [Column("rejection_reason", TypeName = "text")]
     public string? RejectionReason { get; set; }
@@ -56,12 +57,4 @@ public sealed class VerificationRequestEntity
 
     [ForeignKey(nameof(SenderId))]
     public DotNetSkeleton.Modules.AuthModule.Entities.UserEntity Sender { get; set; } = null!;
-}
-
-public static class VerificationRequestStatuses
-{
-    public const string Pending = "PENDING";
-    public const string Accepted = "ACCEPTED";
-    public const string Rejected = "REJECTED";
-    public const string Cancelled = "CANCELLED";
 }
