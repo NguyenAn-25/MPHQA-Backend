@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.Entities;
 
@@ -13,7 +14,7 @@ public sealed class ApplicationEntity
 
     [Required]
     [Column("status")]
-    public string Status { get; set; } = "PENDING";
+    public ApplicationStatus Status { get; set; } = ApplicationStatus.Pending;
 
     [Required]
     [Column("applied_at")]

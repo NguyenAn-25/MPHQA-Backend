@@ -13,7 +13,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.ProfileModule.Seeders;
 
-public sealed class ProfileDevelopmentSampleDataSeeder(IWebHostEnvironment environment) : ISeeder
+public sealed class ProfileDevelopmentSampleDataSeeder(
+    IConfiguration configuration,
+    IWebHostEnvironment environment) : ISeeder
 {
     private const int SampleUserCount = 60;
 
@@ -57,7 +59,7 @@ public sealed class ProfileDevelopmentSampleDataSeeder(IWebHostEnvironment envir
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var samplePhones = Enumerable.Range(0, SampleUserCount)

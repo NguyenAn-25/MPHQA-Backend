@@ -12,6 +12,13 @@ namespace DotNetSkeleton.Modules.JobModule.Controllers;
 [Route("api/v1/job-categories")]
 public sealed class JobCategoriesController(IJobCategoriesService jobCategoriesService) : ApiControllerBase
 {
+    [AllowAnonymous]
+    [HttpGet("active")]
+    [ProducesResponseType<ApiResponse<IReadOnlyList<CategoryResponseDto>>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<CategoryResponseDto>>>> GetActiveCategories(
+        CancellationToken cancellationToken) =>
+        OkResponse(await jobCategoriesService.GetActiveCategoriesAsync(cancellationToken));
+
     [Authorize(Roles = "ADMIN", Policy = "permission:job_categories:read")]
     [HttpGet]
     [ProducesResponseType<ApiResponse<PagedJobCategoriesResponseDto>>(StatusCodes.Status200OK)]

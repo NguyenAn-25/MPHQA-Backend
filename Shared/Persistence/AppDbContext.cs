@@ -3,10 +3,15 @@ using DotNetSkeleton.Modules.AuthModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Converters;
 using DotNetSkeleton.Modules.JobModule.Entities;
 using DotNetSkeleton.Modules.SkillModule.Entities;
+using DotNetSkeleton.Modules.JobModule.Converters;
+using DotNetSkeleton.Modules.MessagingModule.Entities;
+using DotNetSkeleton.Modules.NotificationModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Converters;
-using DotNetSkeleton.Modules.NotificationModule.Entities;
 using DotNetSkeleton.Modules.NotificationModule.Converters;
+using DotNetSkeleton.Modules.ReportModule.Entities;
+using DotNetSkeleton.Modules.WalletModule.Entities;
+using DotNetSkeleton.Modules.WalletModule.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Shared.Persistence;
@@ -22,15 +27,31 @@ public class AppDbContext : DbContext
     public DbSet<PermissionEntity> Permissions => Set<PermissionEntity>();
     public DbSet<PermissionDetailEntity> PermissionDetails => Set<PermissionDetailEntity>();
     public DbSet<FunctionEntity> Functions => Set<FunctionEntity>();
+    public DbSet<JobEntity> Jobs => Set<JobEntity>();
+    public DbSet<ApplicationEntity> Applications => Set<ApplicationEntity>();
     public DbSet<JobCategoryEntity> JobCategories => Set<JobCategoryEntity>();
-    public DbSet<SkillEntity> Skills => Set<SkillEntity>();
+    public DbSet<JobFeedbackEntity> JobFeedbacks => Set<JobFeedbackEntity>();
+    public DbSet<JobImageEntity> JobImages => Set<JobImageEntity>();
+    public DbSet<JobRequiredSkillEntity> JobRequiredSkills => Set<JobRequiredSkillEntity>();
+    public DbSet<PostPackageEntity> PostPackages => Set<PostPackageEntity>();
+    public DbSet<SavedJobEntity> SavedJobs => Set<SavedJobEntity>();
+    public DbSet<ConnectionFeeSettingEntity> ConnectionFeeSettings => Set<ConnectionFeeSettingEntity>();
     public DbSet<ProfileEntity> Profiles => Set<ProfileEntity>();
     public DbSet<ProfileExperienceEntity> ProfileExperiences => Set<ProfileExperienceEntity>();
-    public DbSet<ProfileSkillEntity> ProfileSkills => Set<ProfileSkillEntity>();
     public DbSet<ProfileIdentityEntity> ProfileIdentities => Set<ProfileIdentityEntity>();
+    public DbSet<ProfileSkillEntity> ProfileSkills => Set<ProfileSkillEntity>();
+    public DbSet<SkillEntity> Skills => Set<SkillEntity>();
     public DbSet<VerificationRequestEntity> VerificationRequests => Set<VerificationRequestEntity>();
+    public DbSet<WalletEntity> Wallets => Set<WalletEntity>();
+    public DbSet<WalletTransactionEntity> WalletTransactions => Set<WalletTransactionEntity>();
+    public DbSet<TopUpOrderEntity> TopUpOrders => Set<TopUpOrderEntity>();
+    public DbSet<PaymentMethodEntity> PaymentMethods => Set<PaymentMethodEntity>();
+    public DbSet<ConversationEntity> Conversations => Set<ConversationEntity>();
+    public DbSet<MessageEntity> Messages => Set<MessageEntity>();
+    public DbSet<MessageImageEntity> MessageImages => Set<MessageImageEntity>();
     public DbSet<NotificationEntity> Notifications => Set<NotificationEntity>();
     public DbSet<NotificationDetailEntity> NotificationDetails => Set<NotificationDetailEntity>();
+    public DbSet<ReportEntity> Reports => Set<ReportEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -153,6 +174,31 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(detail => detail.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.Status)
+            .HasConversion(new JobStatusValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.PricingModel)
+            .HasConversion(new PricingModelValueConverter())
+            .HasMaxLength(24);
+
+        modelBuilder.Entity<ApplicationEntity>()
+            .Property(application => application.Status)
+            .HasConversion(new ApplicationStatusValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<WalletTransactionEntity>()
+            .Property(transaction => transaction.ObjectType)
+            .HasConversion(new WalletObjectTypeValueConverter())
+            .HasMaxLength(16);
+
+        modelBuilder.Entity<WalletTransactionEntity>()
+            .Property(transaction => transaction.Type)
+            .HasConversion(new WalletTransactionTypeValueConverter())
+            .HasMaxLength(16);
 
     }
 }

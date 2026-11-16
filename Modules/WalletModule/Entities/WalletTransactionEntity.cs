@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.WalletModule.Enums;
 
 namespace DotNetSkeleton.Modules.WalletModule.Entities;
 
@@ -24,14 +25,14 @@ public sealed class WalletTransactionEntity
     public int BalanceAfter { get; set; }
 
     [Column("object_type")]
-    public string? ObjectType { get; set; }
+    public WalletObjectType? ObjectType { get; set; }
 
     [Column("object_id")]
     public int? ObjectId { get; set; }
 
     [Required]
     [Column("type")]
-    public string Type { get; set; } = string.Empty;
+    public WalletTransactionType Type { get; set; } = WalletTransactionType.Topup;
 
     [Required]
     [Column("wallet_id")]

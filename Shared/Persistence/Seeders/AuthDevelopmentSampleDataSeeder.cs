@@ -9,11 +9,12 @@ using Microsoft.EntityFrameworkCore;
 namespace DotNetSkeleton.Shared.Persistence.Seeders;
 
 /// <summary>
-/// Adds Development fixtures for user lists and auth history screens.
+/// Adds fixture data for user lists and auth history screens.
 /// The reserved 202-555-01xx numbers are fictional; sessions and OTPs are already expired.
-/// Active fixture accounts use the Development-only password 123456.
+/// Active fixture accounts use the fixture password 123456.
 /// </summary>
 public sealed class AuthDevelopmentSampleDataSeeder(
+    IConfiguration configuration,
     IWebHostEnvironment environment,
     IPasswordHasher<UserEntity> passwordHasher,
     ILogger<AuthDevelopmentSampleDataSeeder> logger) : ISeeder
@@ -25,7 +26,7 @@ public sealed class AuthDevelopmentSampleDataSeeder(
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var phones = Enumerable.Range(0, SampleUserCount)
