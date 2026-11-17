@@ -30,6 +30,7 @@ public static class JobServiceCollectionExtensions
         services.AddScoped<IApplicationService, ApplicationService>();
         services.AddValidatorsFromAssemblyContaining<CreateTimeBasedJobRequestDtoValidator>();
 
+        services.AddScoped<IJobsService, JobsService>();
         return services;
     }
 }

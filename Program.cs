@@ -10,6 +10,7 @@ using DotNetSkeleton.Modules.ProfileModule.Extensions;
 using DotNetSkeleton.Modules.NotificationModule.Extensions;
 using DotNetSkeleton.Modules.ExampleModule.Extensions;
 using DotNetSkeleton.Modules.WalletModule.Extensions;
+using DotNetSkeleton.Modules.ReportModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddSkillModule();
 builder.Services.AddProfileModule();
 builder.Services.AddNotificationModule();
 builder.Services.AddWalletModule();
+builder.Services.AddReportModule();
 builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()

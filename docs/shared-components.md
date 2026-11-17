@@ -115,7 +115,7 @@ Service ném lỗi nghiệp vụ; service không tự tạo `IActionResult` và 
 ## `Shared/Persistence`
 
 - `AppDbContext`: điểm cấu hình EF Core context và DbSet của các module.
-- `AppDbContext` map profile, kinh nghiệm, kỹ năng, identity, verification request và notification records để các cập nhật hồ sơ và duyệt định danh dùng cùng unit of work.
+- `AppDbContext` map user, profile, danh mục và dữ liệu công việc, kỹ năng, identity, verification request, notification, report để các module dùng chung unit of work.
 - `DatabaseReferenceExtensions.HasReferencesAsync`: kiểm tra một ID có được tham chiếu trong bảng/cột PostgreSQL chỉ định hay không; tên bảng/cột được kiểm tra định dạng trước khi tạo truy vấn.
 - `AppDbContextFactory`: tạo context khi chạy EF CLI mà không khởi động web app/seeder. Nó đọc appsettings, User Secrets và environment variables.
 - `Migrations/`: migration và model snapshot.
@@ -126,6 +126,7 @@ Service ném lỗi nghiệp vụ; service không tự tạo `IActionResult` và 
 - `Seeders/AuthDevelopmentAdminAccountsSeeder`: tạo hai admin fixture với password Development `123456`; chỉ chạy trong Development và không nâng quyền user có sẵn.
 - `Seeders/AuthDevelopmentSampleDataSeeder`: tạo tối đa 60 user mẫu với password Development `123456` và OTP/session lịch sử đã hết hạn; chỉ chạy trong Development.
 - `ProfileModule/Seeders/ProfileDevelopmentSampleDataSeeder`: tạo profile, kinh nghiệm, kỹ năng và dữ liệu xác thực mẫu liên kết với user fixture; chỉ chạy trong Development và không ghi đè profile/request đã tồn tại.
+- `ReportModule/Seeders/ReportDevelopmentSampleDataSeeder`: thêm 24 report USER và tối đa 24 report JOB tham chiếu dữ liệu có sẵn; chỉ chạy trong Development và bỏ qua report mẫu đã tạo.
 - `Seeders/JobCategorySeeder`: thêm 28 lĩnh vực gốc cùng 181 danh mục công việc ngắn hạn còn thiếu; chạy trong pipeline Development.
 - `Modules/SkillModule/Seeders/SkillSeeder`: thêm 157 kỹ năng ngắn hạn còn thiếu; chạy trong pipeline Development.
 - `Seeders/ExampleDataSeeder`: seeder mẫu đang có trong source nhưng hiện không đăng ký trong `AddSeeders()`.
