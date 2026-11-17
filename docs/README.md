@@ -1,6 +1,6 @@
 # Tài liệu hệ thống
 
-Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Nghiệp vụ xác thực, quản lý user và permission nằm trong [AuthModule](auth-module/README.md); quản lý lĩnh vực nằm trong [JobModule](job-module/job-categories.md); danh mục kỹ năng dùng chung nằm trong [SkillModule](skill-module/skills.md); hồ sơ cá nhân và yêu cầu xác thực thuộc [ProfileModule](profile-module/profile.md); gửi thông báo quản trị nằm trong [NotificationModule](notification-module/notifications.md).
+Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành phần dùng chung của DotNetSkeleton**. Nghiệp vụ xác thực, quản lý user và permission nằm trong [AuthModule](auth-module/README.md); quản lý lĩnh vực và kiểm duyệt công việc nằm trong [JobModule](job-module/job-categories.md); danh mục kỹ năng dùng chung nằm trong [SkillModule](skill-module/skills.md); hồ sơ cá nhân và yêu cầu xác thực thuộc [ProfileModule](profile-module/profile.md); gửi thông báo quản trị nằm trong [NotificationModule](notification-module/notifications.md); kiểm duyệt báo cáo thuộc [ReportModule](report-module/reports.md).
 
 ## Tài liệu toàn hệ thống
 
@@ -24,6 +24,7 @@ Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành ph�
 ## Tài liệu JobModule
 
 - [Quản lý lĩnh vực](job-module/job-categories.md)
+- [Quản lý công việc](job-module/jobs.md)
 
 ## Tài liệu SkillModule
 
@@ -37,6 +38,10 @@ Bộ tài liệu ở thư mục này mô tả **kiến trúc và các thành ph�
 ## Tài liệu NotificationModule
 
 - [Quản lý và gửi thông báo](notification-module/notifications.md)
+
+## Tài liệu ReportModule
+
+- [Danh sách, chi tiết và xử lý báo cáo](report-module/reports.md)
 
 ## Bắt đầu nhanh
 

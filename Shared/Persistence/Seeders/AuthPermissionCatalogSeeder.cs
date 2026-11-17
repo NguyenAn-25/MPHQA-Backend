@@ -10,10 +10,12 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
     [
         // Keep this catalog aligned with the permission policies on implemented endpoints.
         ("USERS", "Quản lý người dùng", "User Management", ["READ", "CREATE", "UPDATE"]),
+        ("JOBS", "Quản lý công việc", "Job Management", ["READ", "UPDATE"]),
         ("JOB_CATEGORIES", "Quản lý lĩnh vực", "Job Category Management", ["READ", "CREATE", "UPDATE", "DELETE"]),
         ("SKILLS", "Quản lý kỹ năng", "Skill Management", ["READ", "CREATE", "UPDATE", "DELETE"]),
         ("VERIFICATION_REQUESTS", "Xử lý yêu cầu xác thực", "Verification Request Management", ["READ", "UPDATE"]),
         ("NOTIFICATIONS", "Quản lý thông báo", "Notification Management", ["READ", "CREATE"]),
+        ("REPORTS", "Quản lý báo cáo", "Report Management", ["READ", "UPDATE"]),
         ("PERMISSIONS", "Quản lý nhóm quyền", "Permission Management", ["READ", "CREATE", "UPDATE", "DELETE"])
     ];
 
@@ -22,6 +24,8 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
         ("USERS", "READ"),
         ("USERS", "CREATE"),
         ("USERS", "UPDATE"),
+        ("JOBS", "READ"),
+        ("JOBS", "UPDATE"),
         ("JOB_CATEGORIES", "READ"),
         ("JOB_CATEGORIES", "CREATE"),
         ("JOB_CATEGORIES", "UPDATE"),
@@ -34,6 +38,8 @@ public sealed class AuthPermissionCatalogSeeder : ISeeder
         ("VERIFICATION_REQUESTS", "UPDATE"),
         ("NOTIFICATIONS", "READ"),
         ("NOTIFICATIONS", "CREATE"),
+        ("REPORTS", "READ"),
+        ("REPORTS", "UPDATE"),
         ("PERMISSIONS", "READ"),
         ("PERMISSIONS", "CREATE"),
         ("PERMISSIONS", "UPDATE"),

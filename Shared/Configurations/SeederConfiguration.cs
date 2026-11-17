@@ -4,6 +4,7 @@ using DotNetSkeleton.Shared.Persistence.Seeders;
 using DotNetSkeleton.Modules.SkillModule.Seeders;
 using DotNetSkeleton.Modules.ProfileModule.Seeders;
 using DotNetSkeleton.Modules.NotificationModule.Seeders;
+using DotNetSkeleton.Modules.ReportModule.Seeders;
 
 public static class SeederExtensions
 {
@@ -25,6 +26,7 @@ public static class SeederExtensions
         services.AddScoped<ISeeder, JobSeeder>();
         services.AddScoped<ISeeder, JobImageSeeder>();
         services.AddScoped<ISeeder, SavedJobSeeder>();
+        services.AddScoped<ISeeder, ReportDevelopmentSampleDataSeeder>();
         services.AddScoped<DatabaseSeeder>();
 
         return services;

@@ -16,8 +16,8 @@ public sealed class PricingModelJsonConverter : JsonConverter<PricingModel>
 
         return reader.GetString() switch
         {
-            "TIME_BASED" => PricingModel.TimeBased,
-            "PER_CONNECTION" => PricingModel.PerConnection,
+            "TIME_BASED" or "THEO THỜI GIAN" => PricingModel.TimeBased,
+            "PER_CONNECTION" or "THEO LƯỢT KẾT NỐI" => PricingModel.PerConnection,
             _ => throw new JsonException("Mô hình định giá không hợp lệ.")
         };
     }

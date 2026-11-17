@@ -95,6 +95,12 @@ public sealed class JobEntity
     [Column("status")]
     public JobStatus Status { get; set; } = JobStatus.Pending;
 
+    [Column("rejection_reason", TypeName = "text")]
+    public string? RejectionReason { get; set; }
+
+    [Column("cancel_reason", TypeName = "text")]
+    public string? CancelReason { get; set; }
+
     [Column("required_description", TypeName = "text")]
     public string? RequiredDescription { get; set; }
 
