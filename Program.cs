@@ -25,6 +25,7 @@ builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()
     .AddDatabase(builder.Configuration);
+builder.Services.AddFrontendCors(builder.Configuration);
 
 builder.Services.AddSeeders();
 
@@ -39,6 +40,7 @@ app.UseSwaggerDocs();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("Frontend");
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
