@@ -8,6 +8,7 @@ public static class JobServiceCollectionExtensions
     public static IServiceCollection AddJobModule(this IServiceCollection services)
     {
         services.AddScoped<IJobCategoriesService, JobCategoriesService>();
+        services.AddScoped<IJobsService, JobsService>();
         return services;
     }
 }

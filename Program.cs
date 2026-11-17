@@ -8,6 +8,7 @@ using DotNetSkeleton.Modules.JobModule.Extensions;
 using DotNetSkeleton.Modules.SkillModule.Extensions;
 using DotNetSkeleton.Modules.ProfileModule.Extensions;
 using DotNetSkeleton.Modules.NotificationModule.Extensions;
+using DotNetSkeleton.Modules.ReportModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddJobModule();
 builder.Services.AddSkillModule();
 builder.Services.AddProfileModule();
 builder.Services.AddNotificationModule();
+builder.Services.AddReportModule();
 builder.Services
     .AddSharedApi()
     .AddSwaggerDocs()

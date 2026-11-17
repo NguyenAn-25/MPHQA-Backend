@@ -2,11 +2,14 @@ using DotNetSkeleton.Modules.ExampleModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Entities;
 using DotNetSkeleton.Modules.AuthModule.Converters;
 using DotNetSkeleton.Modules.JobModule.Entities;
+using DotNetSkeleton.Modules.JobModule.Converters;
 using DotNetSkeleton.Modules.SkillModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Entities;
 using DotNetSkeleton.Modules.ProfileModule.Converters;
 using DotNetSkeleton.Modules.NotificationModule.Entities;
 using DotNetSkeleton.Modules.NotificationModule.Converters;
+using DotNetSkeleton.Modules.ReportModule.Entities;
+using DotNetSkeleton.Modules.ReportModule.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Shared.Persistence;
@@ -23,6 +26,13 @@ public class AppDbContext : DbContext
     public DbSet<PermissionDetailEntity> PermissionDetails => Set<PermissionDetailEntity>();
     public DbSet<FunctionEntity> Functions => Set<FunctionEntity>();
     public DbSet<JobCategoryEntity> JobCategories => Set<JobCategoryEntity>();
+    public DbSet<JobEntity> Jobs => Set<JobEntity>();
+    public DbSet<JobImageEntity> JobImages => Set<JobImageEntity>();
+    public DbSet<JobRequiredSkillEntity> JobRequiredSkills => Set<JobRequiredSkillEntity>();
+    public DbSet<PostPackageEntity> PostPackages => Set<PostPackageEntity>();
+    public DbSet<ApplicationEntity> Applications => Set<ApplicationEntity>();
+    public DbSet<SavedJobEntity> SavedJobs => Set<SavedJobEntity>();
+    public DbSet<JobFeedbackEntity> JobFeedbacks => Set<JobFeedbackEntity>();
     public DbSet<SkillEntity> Skills => Set<SkillEntity>();
     public DbSet<ProfileEntity> Profiles => Set<ProfileEntity>();
     public DbSet<ProfileExperienceEntity> ProfileExperiences => Set<ProfileExperienceEntity>();
@@ -31,6 +41,7 @@ public class AppDbContext : DbContext
     public DbSet<VerificationRequestEntity> VerificationRequests => Set<VerificationRequestEntity>();
     public DbSet<NotificationEntity> Notifications => Set<NotificationEntity>();
     public DbSet<NotificationDetailEntity> NotificationDetails => Set<NotificationDetailEntity>();
+    public DbSet<ReportEntity> Reports => Set<ReportEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,6 +86,105 @@ public class AppDbContext : DbContext
             .WithMany(category => category.Children)
             .HasForeignKey(category => category.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.Status)
+            .HasConversion(new JobStatusValueConverter());
+
+        modelBuilder.Entity<JobEntity>()
+            .Property(job => job.PricingModel)
+            .HasConversion(new JobPricingModelValueConverter());
+
+        modelBuilder.Entity<JobEntity>()
+            .HasOne(job => job.Creator)
+            .WithMany()
+            .HasForeignKey(job => job.CreatedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobEntity>()
+            .HasOne(job => job.JobCategory)
+            .WithMany()
+            .HasForeignKey(job => job.JobCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobEntity>()
+            .HasOne(job => job.PostPackage)
+            .WithMany(package => package.Jobs)
+            .HasForeignKey(job => job.PostPackageId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<JobImageEntity>()
+            .HasOne(image => image.Job)
+            .WithMany(job => job.Images)
+            .HasForeignKey(image => image.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobRequiredSkillEntity>()
+            .HasOne(requiredSkill => requiredSkill.Job)
+            .WithMany(job => job.RequiredSkills)
+            .HasForeignKey(requiredSkill => requiredSkill.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobRequiredSkillEntity>()
+            .HasOne(requiredSkill => requiredSkill.Skill)
+            .WithMany()
+            .HasForeignKey(requiredSkill => requiredSkill.SkillId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobRequiredSkillEntity>()
+            .HasIndex(requiredSkill => new { requiredSkill.JobId, requiredSkill.SkillId })
+            .IsUnique();
+
+        modelBuilder.Entity<ApplicationEntity>()
+            .HasOne(application => application.Job)
+            .WithMany(job => job.Applications)
+            .HasForeignKey(application => application.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ApplicationEntity>()
+            .HasOne(application => application.User)
+            .WithMany()
+            .HasForeignKey(application => application.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SavedJobEntity>()
+            .HasOne(savedJob => savedJob.Job)
+            .WithMany(job => job.SavedByUsers)
+            .HasForeignKey(savedJob => savedJob.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SavedJobEntity>()
+            .HasOne(savedJob => savedJob.User)
+            .WithMany()
+            .HasForeignKey(savedJob => savedJob.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobFeedbackEntity>()
+            .HasOne(feedback => feedback.Job)
+            .WithMany(job => job.Feedbacks)
+            .HasForeignKey(feedback => feedback.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<JobFeedbackEntity>()
+            .HasOne(feedback => feedback.Reviewer)
+            .WithMany()
+            .HasForeignKey(feedback => feedback.ReviewerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobFeedbackEntity>()
+            .HasOne(feedback => feedback.Reviewee)
+            .WithMany()
+            .HasForeignKey(feedback => feedback.RevieweeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<JobEntity>()
+            .HasIndex(job => new { job.Status, job.CreatedAt });
+
+        modelBuilder.Entity<JobEntity>()
+            .HasIndex(job => job.JobCategoryId);
+
+        modelBuilder.Entity<JobEntity>()
+            .HasIndex(job => job.CreatedBy);
 
         modelBuilder.Entity<ProfileEntity>()
             .HasOne(profile => profile.User)
@@ -137,6 +247,26 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<NotificationEntity>()
             .Property(notification => notification.SendTo)
             .HasConversion(new NotificationSendToValueConverter());
+
+        modelBuilder.Entity<ReportEntity>()
+            .Property(report => report.ObjectType)
+            .HasConversion(new ReportObjectTypeValueConverter());
+
+        modelBuilder.Entity<ReportEntity>()
+            .Property(report => report.Status)
+            .HasConversion(new ReportStatusValueConverter());
+
+        modelBuilder.Entity<ReportEntity>()
+            .HasOne(report => report.Sender)
+            .WithMany()
+            .HasForeignKey(report => report.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ReportEntity>()
+            .HasIndex(report => new { report.Status, report.CreatedAt });
+
+        modelBuilder.Entity<ReportEntity>()
+            .HasIndex(report => new { report.ObjectType, report.ObjectId });
 
         modelBuilder.Entity<NotificationDetailEntity>()
             .HasOne(detail => detail.Notification)
