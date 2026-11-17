@@ -1,0 +1,37 @@
+using DotNetSkeleton.Modules.JobModule.Enums;
+
+namespace DotNetSkeleton.Modules.JobModule.DTOs.Responses;
+
+public sealed record AdminJobDetailResponseDto(
+    int Id,
+    string Title,
+    string Description,
+    string? RequiredDescription,
+    string? AutoReplyMessage,
+    decimal SalaryValue,
+    string SalaryUnit,
+    decimal TotalSalaryPayment,
+    decimal TotalPlatformFee,
+    decimal TotalExpense,
+    string Address,
+    decimal? Lng,
+    decimal? Lat,
+    int RequiredNumberOfWorkers,
+    PricingModel PricingModel,
+    int PostFeeCoin,
+    bool IsPaid,
+    JobStatus Status,
+    DateTimeOffset TimeStartAt,
+    DateTimeOffset TimeEndAt,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? AcceptedAt,
+    DateTimeOffset? RejectedAt,
+    DateTimeOffset? CancelledAt,
+    DateTimeOffset? ExpiredAt,
+    string? RejectionReason,
+    string? CancelReason,
+    AdminJobCategoryResponseDto Category,
+    JobPostPackageResponseDto? PostPackage,
+    JobAuthorResponseDto Author,
+    IReadOnlyList<JobImageResponseDto> Images,
+    IReadOnlyList<JobRequiredSkillResponseDto> RequiredSkills);

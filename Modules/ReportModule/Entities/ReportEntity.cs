@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DotNetSkeleton.Modules.ReportModule.Enums;
 
 namespace DotNetSkeleton.Modules.ReportModule.Entities;
 
@@ -13,7 +14,7 @@ public sealed class ReportEntity
 
     [Required]
     [Column("object_type")]
-    public string ObjectType { get; set; } = string.Empty;
+    public ReportObjectType ObjectType { get; set; }
 
     [Required]
     [Column("object_id")]
@@ -36,7 +37,10 @@ public sealed class ReportEntity
 
     [Required]
     [Column("status")]
-    public string Status { get; set; } = "PENDING";
+    public ReportStatus Status { get; set; } = ReportStatus.Pending;
+
+    [Column("processed_note", TypeName = "text")]
+    public string? ProcessedNote { get; set; }
 
     [Column("image")]
     public string? Image { get; set; }

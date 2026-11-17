@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DotNetSkeleton.Migrations
+namespace DotNetSkeleton.Shared.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -311,6 +311,8 @@ namespace DotNetSkeleton.Migrations
                     time_start_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     time_end_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     status = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    rejection_reason = table.Column<string>(type: "text", nullable: true),
+                    cancel_reason = table.Column<string>(type: "text", nullable: true),
                     required_description = table.Column<string>(type: "text", nullable: true),
                     auto_reply_message = table.Column<string>(type: "text", nullable: true),
                     pricing_model = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: false),
@@ -327,18 +329,19 @@ namespace DotNetSkeleton.Migrations
                         column: x => x.job_category_id,
                         principalTable: "job_categories",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_jobs_post_packages_post_package_id",
                         column: x => x.post_package_id,
                         principalTable: "post_packages",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_jobs_user_created_by",
                         column: x => x.created_by,
                         principalTable: "user",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -405,6 +408,7 @@ namespace DotNetSkeleton.Migrations
                     title = table.Column<string>(type: "text", nullable: false),
                     reason = table.Column<string>(type: "text", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),
+                    processed_note = table.Column<string>(type: "text", nullable: true),
                     image = table.Column<string>(type: "text", nullable: true),
                     sender_id = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -416,7 +420,7 @@ namespace DotNetSkeleton.Migrations
                         column: x => x.sender_id,
                         principalTable: "user",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -558,13 +562,13 @@ namespace DotNetSkeleton.Migrations
                         column: x => x.reviewee_id,
                         principalTable: "user",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_job_feedbacks_user_reviewer_id",
                         column: x => x.reviewer_id,
                         principalTable: "user",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -610,7 +614,7 @@ namespace DotNetSkeleton.Migrations
                         column: x => x.skill_id,
                         principalTable: "skills",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -899,9 +903,10 @@ namespace DotNetSkeleton.Migrations
                 column: "job_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_job_required_skills_job_id",
+                name: "IX_job_required_skills_job_id_skill_id",
                 table: "job_required_skills",
-                column: "job_id");
+                columns: new[] { "job_id", "skill_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_job_required_skills_skill_id",
@@ -922,6 +927,11 @@ namespace DotNetSkeleton.Migrations
                 name: "IX_jobs_post_package_id",
                 table: "jobs",
                 column: "post_package_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_jobs_status_created_at",
+                table: "jobs",
+                columns: new[] { "status", "created_at" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_message_images_message_id",
@@ -1004,9 +1014,19 @@ namespace DotNetSkeleton.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_reports_object_type_object_id",
+                table: "reports",
+                columns: new[] { "object_type", "object_id" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_reports_sender_id",
                 table: "reports",
                 column: "sender_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_reports_status_created_at",
+                table: "reports",
+                columns: new[] { "status", "created_at" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_saved_jobs_job_id",

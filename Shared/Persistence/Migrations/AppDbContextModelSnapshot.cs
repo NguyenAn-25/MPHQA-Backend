@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DotNetSkeleton.Migrations
+namespace DotNetSkeleton.Shared.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -461,6 +461,10 @@ namespace DotNetSkeleton.Migrations
                         .HasColumnType("text")
                         .HasColumnName("auto_reply_message");
 
+                    b.Property<string>("CancelReason")
+                        .HasColumnType("text")
+                        .HasColumnName("cancel_reason");
+
                     b.Property<DateTimeOffset?>("CancelledAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("cancelled_at");
@@ -524,6 +528,10 @@ namespace DotNetSkeleton.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("rejected_at");
 
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_reason");
+
                     b.Property<string>("RequiredDescription")
                         .HasColumnType("text")
                         .HasColumnName("required_description");
@@ -583,6 +591,8 @@ namespace DotNetSkeleton.Migrations
                     b.HasIndex("JobCategoryId");
 
                     b.HasIndex("PostPackageId");
+
+                    b.HasIndex("Status", "CreatedAt");
 
                     b.ToTable("jobs");
                 });
@@ -679,9 +689,10 @@ namespace DotNetSkeleton.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobId");
-
                     b.HasIndex("SkillId");
+
+                    b.HasIndex("JobId", "SkillId")
+                        .IsUnique();
 
                     b.ToTable("job_required_skills");
                 });
@@ -1160,6 +1171,10 @@ namespace DotNetSkeleton.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("processed_at");
 
+                    b.Property<string>("ProcessedNote")
+                        .HasColumnType("text")
+                        .HasColumnName("processed_note");
+
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("text")
@@ -1182,6 +1197,10 @@ namespace DotNetSkeleton.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SenderId");
+
+                    b.HasIndex("ObjectType", "ObjectId");
+
+                    b.HasIndex("Status", "CreatedAt");
 
                     b.ToTable("reports");
                 });
@@ -1454,18 +1473,19 @@ namespace DotNetSkeleton.Migrations
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", "JobCategory")
                         .WithMany()
                         .HasForeignKey("JobCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DotNetSkeleton.Modules.JobModule.Entities.PostPackageEntity", "PostPackage")
                         .WithMany("Jobs")
-                        .HasForeignKey("PostPackageId");
+                        .HasForeignKey("PostPackageId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Creator");
 
@@ -1485,13 +1505,13 @@ namespace DotNetSkeleton.Migrations
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Reviewee")
                         .WithMany()
                         .HasForeignKey("RevieweeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Reviewer")
                         .WithMany()
                         .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -1523,7 +1543,7 @@ namespace DotNetSkeleton.Migrations
                     b.HasOne("DotNetSkeleton.Modules.SkillModule.Entities.SkillEntity", "Skill")
                         .WithMany()
                         .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Job");
@@ -1710,7 +1730,7 @@ namespace DotNetSkeleton.Migrations
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Sender");
