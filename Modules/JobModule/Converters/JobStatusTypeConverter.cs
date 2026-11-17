@@ -17,14 +17,13 @@ public sealed class JobStatusTypeConverter : EnumConverter
 
         return text.Trim().ToUpperInvariant() switch
         {
-            "PENDING" or "ĐANG CHỜ DUYỆT" => JobStatus.Pending,
-            "ACCEPTED" or "ĐÃ DUYỆT" => JobStatus.Accepted,
-            "REJECTED" or "ĐÃ TỪ CHỐI" => JobStatus.Rejected,
-            "FULL" or "ĐÃ ĐỦ NGƯỜI" => JobStatus.Full,
-            "WORKING" or "ĐANG LÀM" => JobStatus.Working,
-            "COMPLETED" or "ĐÃ HOÀN THÀNH" => JobStatus.Completed,
-            "CANCELLED" or "ĐÃ HỦY" => JobStatus.Cancelled,
-            _ => throw new FormatException("status công việc không hợp lệ.")
+            "PENDING" => JobStatus.Pending,
+            "ACCEPTED" => JobStatus.Accepted,
+            "WORKING" => JobStatus.Working,
+            "COMPLETED" => JobStatus.Completed,
+            "REJECTED" => JobStatus.Rejected,
+            "CANCELLED" => JobStatus.Cancelled,
+            _ => throw new FormatException("Invalid job status.")
         };
     }
 }

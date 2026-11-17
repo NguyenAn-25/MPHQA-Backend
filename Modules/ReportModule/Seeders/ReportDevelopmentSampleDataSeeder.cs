@@ -12,6 +12,7 @@ namespace DotNetSkeleton.Modules.ReportModule.Seeders;
 
 public sealed class ReportDevelopmentSampleDataSeeder(
     IWebHostEnvironment environment,
+    IConfiguration configuration,
     ILogger<ReportDevelopmentSampleDataSeeder> logger) : ISeeder
 {
     private const string TitlePrefix = "[DEV REPORT]";
@@ -81,7 +82,7 @@ public sealed class ReportDevelopmentSampleDataSeeder(
 
     public async Task<int> SeedAsync(AppDbContext context)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.ShouldSeedDevelopmentData(configuration))
             return 0;
 
         var users = await context.Users

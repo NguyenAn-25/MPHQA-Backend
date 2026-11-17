@@ -2,14 +2,14 @@ using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.DTOs.Responses;
 
-public sealed record JobListItemResponseDto(
+public sealed record AdminJobListItemResponseDto(
     int Id,
     string Title,
     decimal SalaryValue,
     string SalaryUnit,
-    JobPricingModel PricingModel,
+    PricingModel PricingModel,
     JobStatus Status,
     int ApplicantCount,
     DateTimeOffset CreatedAt,
-    JobCategoryResponseDto Category,
+    AdminJobCategoryResponseDto Category,
     JobAuthorResponseDto Author);

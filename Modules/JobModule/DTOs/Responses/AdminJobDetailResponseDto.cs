@@ -2,7 +2,7 @@ using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.DTOs.Responses;
 
-public sealed record JobDetailResponseDto(
+public sealed record AdminJobDetailResponseDto(
     int Id,
     string Title,
     string Description,
@@ -17,7 +17,7 @@ public sealed record JobDetailResponseDto(
     decimal? Lng,
     decimal? Lat,
     int RequiredNumberOfWorkers,
-    JobPricingModel PricingModel,
+    PricingModel PricingModel,
     int PostFeeCoin,
     bool IsPaid,
     JobStatus Status,
@@ -30,7 +30,7 @@ public sealed record JobDetailResponseDto(
     DateTimeOffset? ExpiredAt,
     string? RejectionReason,
     string? CancelReason,
-    JobCategoryResponseDto Category,
+    AdminJobCategoryResponseDto Category,
     JobPostPackageResponseDto? PostPackage,
     JobAuthorResponseDto Author,
     IReadOnlyList<JobImageResponseDto> Images,

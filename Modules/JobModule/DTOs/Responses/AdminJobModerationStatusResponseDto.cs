@@ -2,7 +2,7 @@ using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.DTOs.Responses;
 
-public sealed record JobModerationStatusResponseDto(
+public sealed record AdminJobModerationStatusResponseDto(
     int Id,
     JobStatus Status,
     DateTimeOffset? AcceptedAt,

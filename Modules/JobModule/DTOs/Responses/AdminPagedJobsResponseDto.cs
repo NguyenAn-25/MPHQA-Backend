@@ -1,7 +1,7 @@
 namespace DotNetSkeleton.Modules.JobModule.DTOs.Responses;
 
-public sealed record PagedJobsResponseDto(
-    IReadOnlyList<JobListItemResponseDto> Items,
+public sealed record AdminPagedJobsResponseDto(
+    IReadOnlyList<AdminJobListItemResponseDto> Items,
     int Page,
     int PageSize,
     int TotalCount);

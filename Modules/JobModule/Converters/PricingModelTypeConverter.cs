@@ -4,9 +4,9 @@ using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.Converters;
 
-public sealed class JobPricingModelTypeConverter : EnumConverter
+public sealed class PricingModelTypeConverter : EnumConverter
 {
-    public JobPricingModelTypeConverter() : base(typeof(JobPricingModel))
+    public PricingModelTypeConverter() : base(typeof(PricingModel))
     {
     }
 
@@ -17,9 +17,9 @@ public sealed class JobPricingModelTypeConverter : EnumConverter
 
         return text.Trim().ToUpperInvariant() switch
         {
-            "TIME_BASED" or "THEO THỜI GIAN" => JobPricingModel.TimeBased,
-            "PER_CONNECTION" or "THEO LƯỢT KẾT NỐI" => JobPricingModel.PerConnection,
-            _ => throw new FormatException("pricingModel không hợp lệ.")
+            "TIME_BASED" => PricingModel.TimeBased,
+            "PER_CONNECTION" => PricingModel.PerConnection,
+            _ => throw new FormatException("Invalid pricing model.")
         };
     }
 }

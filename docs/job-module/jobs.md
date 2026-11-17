@@ -17,7 +17,7 @@ Query parameters:
   "page": "integer (tùy chọn)",
   "pageSize": "integer (tùy chọn, từ 1 đến 100)",
   "search": "string (tùy chọn, tìm trong tiêu đề)",
-  "status": "PENDING | ACCEPTED | REJECTED | FULL | WORKING | COMPLETED | CANCELLED hoặc nhãn tiếng Việt (tùy chọn)",
+  "status": "PENDING | ACCEPTED | WORKING | COMPLETED | REJECTED | CANCELLED hoặc nhãn tiếng Việt (tùy chọn)",
   "pricingModel": "TIME_BASED | PER_CONNECTION hoặc nhãn tiếng Việt (tùy chọn)",
   "categoryId": "integer (tùy chọn)",
   "createdBy": "integer (tùy chọn)",
@@ -39,7 +39,7 @@ Response `data`:
       "salaryValue": "decimal",
       "salaryUnit": "string",
       "pricingModel": "Theo thời gian | Theo lượt kết nối",
-      "status": "Đang chờ duyệt | Đã duyệt | Đã từ chối | Đã đủ người | Đang làm | Đã hoàn thành | Đã hủy",
+      "status": "PENDING | ACCEPTED | WORKING | COMPLETED | REJECTED | CANCELLED",
       "applicantCount": "integer",
       "createdAt": "ISO-8601",
       "category": { "id": "integer", "name": "string" },
@@ -88,7 +88,7 @@ Response `data`:
 }
 ```
 
-`ACCEPTED` và `REJECTED` chỉ áp dụng khi job đang `PENDING`. `CANCELLED` áp dụng cho job `PENDING`, `ACCEPTED`, `FULL` hoặc `WORKING`. Khi đổi trạng thái thành công, hệ thống gửi notification cho người đăng. Trạng thái đã kết thúc không thể đổi sang trạng thái khác.
+`ACCEPTED` và `REJECTED` chỉ áp dụng khi job đang `PENDING`. `CANCELLED` áp dụng cho job `PENDING`, `ACCEPTED` hoặc `WORKING`. Khi đổi trạng thái thành công, hệ thống gửi notification cho người đăng. Trạng thái đã kết thúc không thể đổi sang trạng thái khác.
 
 Trong môi trường Development, `JobDevelopmentSampleDataSeeder` thêm tối đa 120 job ngắn hạn, cùng post package mẫu, ảnh địa điểm, kỹ năng cần có và các ứng viên. Seeder chỉ thêm job có tiêu đề fixture chưa tồn tại; các report fixture chạy sau sẽ tham chiếu job mẫu này.
 
@@ -102,11 +102,9 @@ Sau khi seeder chạy, lọc danh sách bằng `GET /api/v1/admin/jobs?search=AP
 | `PENDING TO REJECTED` | `Đang chờ duyệt` | `{"status":"REJECTED","rejectionReason":"Thông tin tuyển dụng chưa rõ"}` — thành công |
 | `PENDING TO CANCELLED` | `Đang chờ duyệt` | `{"status":"CANCELLED","cancelReason":"Đơn vị dừng tuyển"}` — thành công |
 | `ACCEPTED TO CANCELLED` | `Đã duyệt` | `{"status":"CANCELLED","cancelReason":"Hủy ca đã đăng"}` — thành công |
-| `FULL TO CANCELLED` | `Đã đủ người` | `{"status":"CANCELLED","cancelReason":"Gỡ bài vi phạm"}` — thành công |
 | `WORKING TO CANCELLED` | `Đang làm` | `{"status":"CANCELLED","cancelReason":"Gỡ bài vi phạm"}` — thành công |
 | `REJECTED CONFLICT` | `Đã từ chối` | `{"status":"ACCEPTED"}` — `409 Conflict` |
 | `COMPLETED CONFLICT` | `Đã hoàn thành` | `{"status":"CANCELLED","cancelReason":"Gỡ bài"}` — `409 Conflict` |
 | `CANCELLED IDEMPOTENT` | `Đã hủy` | Gửi lại `CANCELLED` — trả kết quả hiện tại, không tạo notification mới |
 | `ACCEPTED IDEMPOTENT` | `Đã duyệt` | Gửi lại `ACCEPTED` — trả kết quả hiện tại, không tạo notification mới |
-| `FULL CONFLICT` | `Đã đủ người` | `{"status":"REJECTED"}` — `409 Conflict` |
 | `WORKING CONFLICT` | `Đang làm` | `{"status":"ACCEPTED"}` — `409 Conflict` |

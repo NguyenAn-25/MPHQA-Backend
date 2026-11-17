@@ -99,14 +99,6 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<JobEntity>()
-            .Property(job => job.Status)
-            .HasConversion(new JobStatusValueConverter());
-
-        modelBuilder.Entity<JobEntity>()
-            .Property(job => job.PricingModel)
-            .HasConversion(new JobPricingModelValueConverter());
-
-        modelBuilder.Entity<JobEntity>()
             .HasOne(job => job.Creator)
             .WithMany()
             .HasForeignKey(job => job.CreatedBy)

@@ -17,7 +17,7 @@ public sealed class AdminListJobsRequestDto : IValidatableObject
 
     public JobStatus? Status { get; init; }
 
-    public JobPricingModel? PricingModel { get; init; }
+    public PricingModel? PricingModel { get; init; }
 
     [Range(1, int.MaxValue, ErrorMessage = "categoryId phải lớn hơn 0.")]
     public int? CategoryId { get; init; }

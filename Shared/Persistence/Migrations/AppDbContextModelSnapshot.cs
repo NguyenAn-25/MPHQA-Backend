@@ -353,7 +353,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<int>("UserId")
@@ -367,6 +368,38 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("applications");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.ConnectionFeeSettingEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset>("EffectiveFrom")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("effective_from");
+
+                    b.Property<int>("FeeCoin")
+                        .HasColumnType("integer")
+                        .HasColumnName("fee_coin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.ToTable("connection_fee_settings");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
@@ -487,7 +520,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("PricingModel")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
                         .HasColumnName("pricing_model");
 
                     b.Property<DateTimeOffset?>("RejectedAt")
@@ -517,7 +551,8 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
                         .HasColumnName("status");
 
                     b.Property<DateTimeOffset>("TimeEndAt")
@@ -708,6 +743,97 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.HasIndex("JobId");
 
                     b.ToTable("saved_jobs");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.ConversationEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("UserAId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_a_id");
+
+                    b.Property<int>("UserBId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_b_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserAId");
+
+                    b.HasIndex("UserBId");
+
+                    b.ToTable("conversations");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.MessageEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("conversation_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("ReplyToMessageId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reply_to_message_id");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sender_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("ReplyToMessageId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("messages");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.MessageImageEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("image");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("integer")
+                        .HasColumnName("message_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("message_images");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationDetailEntity", b =>
@@ -1110,6 +1236,147 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.ToTable("skills");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.PaymentMethodEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("payment_methods");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.TopUpOrderEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoinAmount")
+                        .HasColumnType("integer")
+                        .HasColumnName("coin_amount");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<decimal>("MoneyAmount")
+                        .HasColumnType("numeric(15,2)")
+                        .HasColumnName("money_amount");
+
+                    b.Property<string>("OrderCode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("order_code");
+
+                    b.Property<DateTimeOffset?>("PaidAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("paid_at");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("integer")
+                        .HasColumnName("payment_method_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("text")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("integer")
+                        .HasColumnName("wallet_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("topup_orders");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.WalletEntity", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("Balance")
+                        .HasColumnType("integer")
+                        .HasColumnName("balance");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("wallets");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.WalletTransactionEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BalanceAfter")
+                        .HasColumnType("integer")
+                        .HasColumnName("balance_after");
+
+                    b.Property<int>("CoinAmount")
+                        .HasColumnType("integer")
+                        .HasColumnName("coin_amount");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("ObjectId")
+                        .HasColumnType("integer")
+                        .HasColumnName("object_id");
+
+                    b.Property<string>("ObjectType")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("object_type");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("type");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("integer")
+                        .HasColumnName("wallet_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("wallet_transactions");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.AuthModule.Entities.AuthOtpEntity", b =>
                 {
                     b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
@@ -1178,6 +1445,17 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Job");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.ConnectionFeeSettingEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("DotNetSkeleton.Modules.JobModule.Entities.JobCategoryEntity", b =>
@@ -1292,6 +1570,61 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.ConversationEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "UserA")
+                        .WithMany()
+                        .HasForeignKey("UserAId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "UserB")
+                        .WithMany()
+                        .HasForeignKey("UserBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserA");
+
+                    b.Navigation("UserB");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.MessageEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.MessagingModule.Entities.ConversationEntity", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DotNetSkeleton.Modules.MessagingModule.Entities.MessageEntity", "ReplyToMessage")
+                        .WithMany("Replies")
+                        .HasForeignKey("ReplyToMessageId");
+
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("ReplyToMessage");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.MessageImageEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.MessagingModule.Entities.MessageEntity", "Message")
+                        .WithMany("Images")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationDetailEntity", b =>
                 {
                     b.HasOne("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", "Notification")
@@ -1403,6 +1736,47 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.TopUpOrderEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.WalletModule.Entities.PaymentMethodEntity", "PaymentMethod")
+                        .WithMany("TopUpOrders")
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DotNetSkeleton.Modules.WalletModule.Entities.WalletEntity", "Wallet")
+                        .WithMany("TopUpOrders")
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentMethod");
+
+                    b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.WalletEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.AuthModule.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.WalletTransactionEntity", b =>
+                {
+                    b.HasOne("DotNetSkeleton.Modules.WalletModule.Entities.WalletEntity", "Wallet")
+                        .WithMany("Transactions")
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Wallet");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.AuthModule.Entities.FunctionEntity", b =>
                 {
                     b.Navigation("PermissionDetails");
@@ -1445,6 +1819,18 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Jobs");
                 });
 
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.ConversationEntity", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.MessagingModule.Entities.MessageEntity", b =>
+                {
+                    b.Navigation("Images");
+
+                    b.Navigation("Replies");
+                });
+
             modelBuilder.Entity("DotNetSkeleton.Modules.NotificationModule.Entities.NotificationEntity", b =>
                 {
                     b.Navigation("Details");
@@ -1457,6 +1843,18 @@ namespace DotNetSkeleton.Shared.Persistence.Migrations
                     b.Navigation("Identity");
 
                     b.Navigation("ProfileSkills");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.PaymentMethodEntity", b =>
+                {
+                    b.Navigation("TopUpOrders");
+                });
+
+            modelBuilder.Entity("DotNetSkeleton.Modules.WalletModule.Entities.WalletEntity", b =>
+                {
+                    b.Navigation("TopUpOrders");
+
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

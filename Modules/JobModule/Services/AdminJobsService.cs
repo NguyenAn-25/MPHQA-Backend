@@ -13,10 +13,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetSkeleton.Modules.JobModule.Services;
 
-public sealed class JobsService(AppDbContext context) : IJobsService
+public sealed class AdminJobsService(AppDbContext context) : IAdminJobsService
 {
-    public async Task<PagedJobsResponseDto> ListAsync(
-        ListJobsRequestDto request,
+    public async Task<AdminPagedJobsResponseDto> ListAsync(
+        AdminListJobsRequestDto request,
         CancellationToken cancellationToken)
     {
         var pagination = request.GetPaginationOptions();
@@ -45,7 +45,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
         {
             var offset = ((long)pagination.Page - 1) * pagination.PageSize;
             if (offset > int.MaxValue)
-                return new PagedJobsResponseDto([], pagination.Page, pagination.PageSize, totalCount);
+                return new AdminPagedJobsResponseDto([], pagination.Page, pagination.PageSize, totalCount);
 
             jobsQuery = jobsQuery.Skip((int)offset).Take(pagination.PageSize);
         }
@@ -82,7 +82,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
             .Select(row =>
             {
                 profiles.TryGetValue(row.AuthorId, out var profile);
-                return new JobListItemResponseDto(
+                return new AdminJobListItemResponseDto(
                     row.Id,
                     row.Title,
                     row.SalaryValue,
@@ -91,7 +91,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
                     row.Status,
                     row.ApplicantCount,
                     row.CreatedAt,
-                    new JobCategoryResponseDto(row.CategoryId, row.CategoryName),
+                    new AdminJobCategoryResponseDto(row.CategoryId, row.CategoryName),
                     new JobAuthorResponseDto(
                         row.AuthorId,
                         row.AuthorPublicId,
@@ -101,14 +101,14 @@ public sealed class JobsService(AppDbContext context) : IJobsService
             })
             .ToArray();
 
-        return new PagedJobsResponseDto(
+        return new AdminPagedJobsResponseDto(
             items,
             pagination.Page,
             pagination.IsEnabled ? pagination.PageSize : items.Length,
             totalCount);
     }
 
-    public async Task<JobDetailResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<AdminJobDetailResponseDto> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         var job = await context.Jobs
             .AsNoTracking()
@@ -139,7 +139,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
                 requiredSkill.Skill.Icon))
             .ToListAsync(cancellationToken);
 
-        return new JobDetailResponseDto(
+        return new AdminJobDetailResponseDto(
             job.Id,
             job.Title,
             job.Description,
@@ -167,7 +167,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
             job.ExpiredAt,
             job.RejectionReason,
             job.CancelReason,
-            new JobCategoryResponseDto(job.JobCategory.Id, job.JobCategory.Name),
+            new AdminJobCategoryResponseDto(job.JobCategory.Id, job.JobCategory.Name),
             job.PostPackage is null
                 ? null
                 : new JobPostPackageResponseDto(
@@ -185,10 +185,10 @@ public sealed class JobsService(AppDbContext context) : IJobsService
             requiredSkills);
     }
 
-    public async Task<JobModerationStatusResponseDto> UpdateModerationStatusAsync(
+    public async Task<AdminJobModerationStatusResponseDto> UpdateModerationStatusAsync(
         int id,
         int adminId,
-        UpdateJobModerationStatusRequestDto request,
+        AdminUpdateJobModerationStatusRequestDto request,
         CancellationToken cancellationToken)
     {
         var newStatus = request.Status!.Value;
@@ -259,7 +259,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
         var allowed = requested switch
         {
             JobStatus.Accepted or JobStatus.Rejected => current == JobStatus.Pending,
-            JobStatus.Cancelled => current is JobStatus.Pending or JobStatus.Accepted or JobStatus.Full or JobStatus.Working,
+            JobStatus.Cancelled => current is JobStatus.Pending or JobStatus.Accepted or JobStatus.Working,
             _ => false
         };
 
@@ -267,7 +267,7 @@ public sealed class JobsService(AppDbContext context) : IJobsService
             throw new JobModerationConflictException();
     }
 
-    private static JobModerationStatusResponseDto ToStatusResponse(
+    private static AdminJobModerationStatusResponseDto ToStatusResponse(
         int id,
         JobStatus status,
         DateTimeOffset? acceptedAt,

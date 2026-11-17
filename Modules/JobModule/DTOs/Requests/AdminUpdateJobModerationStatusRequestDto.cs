@@ -3,7 +3,7 @@ using DotNetSkeleton.Modules.JobModule.Enums;
 
 namespace DotNetSkeleton.Modules.JobModule.DTOs.Requests;
 
-public sealed class UpdateJobModerationStatusRequestDto : IValidatableObject
+public sealed class AdminUpdateJobModerationStatusRequestDto : IValidatableObject
 {
     [Required(ErrorMessage = "Trạng thái công việc là bắt buộc.")]
     public JobStatus? Status { get; init; }
