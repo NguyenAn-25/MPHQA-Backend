@@ -118,7 +118,7 @@ Các middleware được cài theo đúng thứ tự trong `Program.cs`: excepti
 | Swagger | Bật | Tắt |
 | EF migration khi app start | Có, qua `DatabaseSeeder.RunAsync()` | Không |
 | Seeder qua startup | Có, với các seeder đăng ký | Không |
-| OTP SMS | Tạm thời không gọi Stringee; dùng `012345` và ghi vào log | OTP ngẫu nhiên, gửi qua Stringee nếu cấu hình đầy đủ |
+| OTP | `012345`, ghi vào application log; không gửi SMS | Mã ngẫu nhiên, ghi vào application log; không gửi SMS |
 | Secret | Có thể dùng User Secrets | Dùng environment/secret manager |
 
 Chi tiết môi trường nằm ở [Cấu hình và chạy hệ thống](system-configuration.md) và [Cấu hình AuthModule](auth-module/configuration.md).

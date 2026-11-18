@@ -173,13 +173,13 @@ Trường `name` phải có từ 3 đến 20 ký tự.
 
 Auth dùng số điện thoại theo định dạng E.164 (ví dụ `+84901234567`), password được hash bằng ASP.NET Core `PasswordHasher`, access token là JWT và refresh token ngẫu nhiên được xoay vòng sau mỗi lần refresh. OTP và refresh token chỉ được lưu dưới dạng hash trong PostgreSQL.
 
-OTP được lưu dạng hash. Trong Development, SMS đang tạm tắt; OTP dùng mã `012345` và được ghi trong application log, kể cả khi có cấu hình Stringee. Ngoài Development, OTP là chuỗi số ngẫu nhiên 6 chữ số và được gửi qua SMS. Mật khẩu đăng ký/đặt lại phải dài 8–128 ký tự, có chữ in hoa, chữ số và ký tự đặc biệt; `123456` chỉ là mật khẩu của dữ liệu seed Development.
+OTP được lưu dạng hash và không gửi SMS. Trong Development, OTP dùng mã `012345`; ngoài Development, OTP là chuỗi số ngẫu nhiên 6 chữ số. Ở mọi môi trường, OTP được ghi vào application log để thử nghiệm. Không dùng cách này cho người dùng thật vì log chứa mã xác thực. Mật khẩu đăng ký/đặt lại phải dài 8–128 ký tự, có chữ in hoa, chữ số và ký tự đặc biệt; `123456` chỉ là mật khẩu của dữ liệu seed Development.
 
 | Method | Endpoint | Mục đích |
 |---|---|---|
-| `POST` | `/api/v1/auth/register` | Tạo tài khoản chưa kích hoạt và gửi OTP |
+| `POST` | `/api/v1/auth/register` | Tạo tài khoản chưa kích hoạt và OTP challenge |
 | `POST` | `/api/v1/auth/otp/verify/{publicId}` | Xác minh OTP của challenge |
-| `POST` | `/api/v1/auth/otp/resend/{publicId}` | Gửi lại OTP của challenge |
+| `POST` | `/api/v1/auth/otp/resend/{publicId}` | Tạo lại OTP cho challenge |
 | `POST` | `/api/v1/auth/register/complete` | Hoàn tất đăng ký sau OTP đã xác minh, đặt password và cấp token |
 | `POST` | `/api/v1/auth/login` | Đăng nhập bằng phone/password |
 | `POST` | `/api/v1/auth/refresh` | Xoay refresh token và cấp access token mới |
@@ -219,7 +219,7 @@ Ví dụ đăng ký:
 }
 ```
 
-`/auth/register` và `/auth/password/forgot` trả challenge có `publicId`. Gửi mã OTP đến `/auth/otp/verify/{publicId}`. Sau khi xác minh thành công, đăng ký hoàn tất qua `/auth/register/complete` với `publicId` và password; đặt lại mật khẩu qua `/auth/password/reset` với `publicId` và `newPassword`. Đăng ký bằng số đã được xác minh trả `409 Conflict` để người dùng đăng nhập hoặc dùng chức năng quên mật khẩu. Mật khẩu dài 8–128 ký tự, có chữ in hoa, chữ số và ký tự đặc biệt.
+`/auth/register` và `/auth/password/forgot` trả challenge có `publicId`. Lấy mã OTP từ application log rồi gửi mã đó đến `/auth/otp/verify/{publicId}`. Sau khi xác minh thành công, đăng ký hoàn tất qua `/auth/register/complete` với `publicId` và password; đặt lại mật khẩu qua `/auth/password/reset` với `publicId` và `newPassword`. Đăng ký bằng số đã được xác minh trả `409 Conflict` để người dùng đăng nhập hoặc dùng chức năng quên mật khẩu. Mật khẩu dài 8–128 ký tự, có chữ in hoa, chữ số và ký tự đặc biệt.
 
 Thêm khóa JWT vào User Secrets trước khi chạy. Khóa cần tối thiểu 32 ký tự ngẫu nhiên:
 
@@ -227,15 +227,7 @@ Thêm khóa JWT vào User Secrets trước khi chạy. Khóa cần tối thiểu
 dotnet user-secrets set "Jwt:SigningKey" "$(openssl rand -base64 48)"
 ```
 
-Trong Development, ứng dụng hiện không gọi Stringee; lấy mã OTP trong application log để thử local. Stringee được giữ sẵn cho môi trường ngoài Development. Cấu hình provider bằng User Secrets khi cần tích hợp:
-
-```bash
-dotnet user-secrets set "Stringee:ApiKeySid" "your-api-key-sid"
-dotnet user-secrets set "Stringee:ApiKeySecret" "your-api-key-secret"
-dotnet user-secrets set "Stringee:BrandName" "YOUR_BRANDNAME"
-```
-
-Trong Production, phải cấu hình đủ ba giá trị Stringee bằng secret manager hoặc biến môi trường (`Stringee__ApiKeySid`, `Stringee__ApiKeySecret`, `Stringee__BrandName`). Brandname cần được đăng ký/kích hoạt cho SMS OTP trên tài khoản Stringee. Không commit thông tin xác thực.
+Ứng dụng không tích hợp dịch vụ SMS. Để thử các luồng đăng ký và đặt lại mật khẩu, lấy OTP từ application log (`Development` dùng `012345`; môi trường khác dùng mã ngẫu nhiên). Không bật hành vi ghi OTP vào log trên hệ thống phục vụ người dùng thật; cần tích hợp một nhà cung cấp OTP trước khi triển khai công khai.
 
 Migration `20261026170000_AddAuthenticationEntities` tạo các bảng auth/permission. Trong Development, `AuthPermissionCatalogSeeder` tạo profile `ADMIN_DEFAULT`; tài khoản đăng ký công khai luôn có role `USER` và không nhận permission profile. Hai tài khoản ADMIN local được seed tự động như mô tả ở mục Seeder bên dưới. Chạy migration thủ công bằng `dotnet tool run dotnet-ef -- database update` nếu không khởi động app trong Development. Không cấp role ADMIN từ request đăng ký công khai; Production cần quy trình bootstrap admin được kiểm soát.
 

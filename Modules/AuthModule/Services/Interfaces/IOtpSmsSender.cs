@@ -1,7 +1,7 @@
 namespace DotNetSkeleton.Modules.AuthModule.Services.Interfaces;
 
 /// <summary>
-/// SMS transport boundary. Production uses the third-party Stringee API; Development can use a local logger.
+/// OTP delivery boundary. The current implementation logs codes and does not send SMS.
 /// </summary>
 public interface IOtpSmsSender
 {

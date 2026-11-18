@@ -10,12 +10,12 @@ sequenceDiagram
     participant API as AuthController
     participant Service as AuthService
     participant DB as PostgreSQL
-    participant SMS as Stringee / Development log
+    participant Log as Application log
     Client->>API: POST /api/v1/auth/register { phone }
     API->>Service: RegisterAsync
     Service->>DB: Tạo user pending nếu chưa có
     Service->>DB: Lưu OTP hash và public_id, hết hạn sau OtpMinutes
-    Service->>SMS: Gửi OTP
+    Service->>Log: Ghi OTP (không gửi SMS)
     API-->>Client: 202 + publicId, purpose, expiry
     Client->>API: POST /api/v1/auth/otp/verify/{publicId} { code }
     API->>Service: VerifyOtpAsync
@@ -128,19 +128,13 @@ OTP cũ còn hiệu lực cùng purpose bị hết hạn khi tạo OTP mới. H�
 
 ## OTP đăng ký và password ban đầu
 
-OTP được lưu dưới dạng hash và gắn với `publicId` duy nhất. Mã hết hạn theo `Jwt:OtpMinutes`, chỉ xác minh một lần và bị khóa sau 5 lần nhập sai. Đăng ký và đặt lại mật khẩu đều phải gọi `/otp/verify/{publicId}` trước bước hoàn tất tương ứng. Trong Development, SMS đang tạm tắt và OTP dùng mã `012345`, đồng thời được ghi vào application log. Ngoài Development, OTP là chuỗi số ngẫu nhiên 6 chữ số và được gửi qua SMS. Hệ thống chỉ phát lại OTP cùng purpose sau mỗi 30 giây; phản hồi gửi lại không tiết lộ challenge có tồn tại hay không.
+OTP được lưu dưới dạng hash và gắn với `publicId` duy nhất. Mã hết hạn theo `Jwt:OtpMinutes`, chỉ xác minh một lần và bị khóa sau 5 lần nhập sai. Đăng ký và đặt lại mật khẩu đều phải gọi `/otp/verify/{publicId}` trước bước hoàn tất tương ứng. Ứng dụng không gửi SMS; Development dùng mã `012345`, môi trường khác sinh mã ngẫu nhiên 6 chữ số, và mọi mã được ghi vào application log để thử nghiệm. Hệ thống chỉ phát lại OTP cùng purpose sau mỗi 30 giây; phản hồi gửi lại không tiết lộ challenge có tồn tại hay không.
 
 Người dùng tự chọn password mạnh trong request hoàn tất đăng ký hoặc đặt lại mật khẩu. Backend không gán mật khẩu chung sau khi xác minh; `123456` chỉ được dùng cho dữ liệu seed Development.
 
-## OTP qua SMS
+## Gửi OTP
 
-Interface `IOtpSmsSender` tách vận chuyển SMS khỏi nghiệp vụ AuthService:
-
-- Development luôn dùng `DevelopmentOtpSmsSender`, mã `012345` được ghi trong application log; cấu hình Stringee bị bỏ qua khi tích hợp đang tạm dừng.
-- Ngoài Development, có đủ `Stringee:ApiKeySid`, `Stringee:ApiKeySecret`, `Stringee:BrandName`: dùng `StringeeOtpSmsSender`.
-- Production thiếu một trong ba giá trị Stringee: ứng dụng dừng lúc khởi động với lỗi cấu hình.
-
-Ở Development hãy tìm dòng `Development OTP for ...` trong log. Không dùng triển khai log để gửi mã cho người dùng thật. Cấu hình SMS chi tiết nằm trong [Cấu hình AuthModule](configuration.md).
+`IOtpSmsSender` tách bước gửi OTP khỏi nghiệp vụ AuthService. Hiện `LoggingOtpSmsSender` ghi số điện thoại và mã OTP vào application log, không gọi dịch vụ SMS. Đây chỉ là cơ chế thử nghiệm; không dùng với người dùng thật vì log có chứa mã xác thực. Xem [Cấu hình AuthModule](configuration.md).
 
 ## Giới hạn chống gửi dồn
 

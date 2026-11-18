@@ -1,6 +1,6 @@
 # Cấu hình và chạy hệ thống
 
-Tài liệu này nói về môi trường chạy chung và PostgreSQL. Secret riêng của xác thực/SMS nằm trong [Cấu hình AuthModule](auth-module/configuration.md).
+Tài liệu này nói về môi trường chạy chung và PostgreSQL. Secret riêng của AuthModule nằm trong [Cấu hình AuthModule](auth-module/configuration.md).
 
 ## Yêu cầu
 
@@ -77,7 +77,7 @@ export ASPNETCORE_ENVIRONMENT=Production
 export ConnectionStrings__Default="Host=db-host;Port=5432;Database=dotnet_skeleton;Username=app_user;Password=..."
 ```
 
-Đặt thông tin xác thực và key riêng qua secret manager của nền tảng. AuthModule cần `Jwt:SigningKey`; Production còn yêu cầu Stringee đầy đủ. Xem [Cấu hình AuthModule](auth-module/configuration.md).
+Đặt thông tin xác thực và key riêng qua secret manager của nền tảng. AuthModule cần `Jwt:SigningKey`. Xem [Cấu hình AuthModule](auth-module/configuration.md).
 
 ## Endpoint tiện ích
 

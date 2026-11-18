@@ -419,7 +419,7 @@ public sealed class AuthService : IAuthService
             _context.AuthOtps.Add(otp);
         await _context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
-        // Development is temporarily routed to a local OTP logger; non-Development uses the configured SMS provider.
+        // SMS is disabled; the registered local sender writes the OTP to the application log.
         await _otpSmsSender.SendAsync(lockedUser.Phone, code, cancellationToken);
         return ToChallengeResponse(otp);
     }
