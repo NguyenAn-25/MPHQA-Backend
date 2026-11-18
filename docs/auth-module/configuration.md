@@ -1,6 +1,6 @@
 # Cấu hình AuthModule
 
-Cấu hình chung .NET/PostgreSQL, chạy ứng dụng và migration nằm trong [Cấu hình và chạy hệ thống](../system-configuration.md). Trang này tập trung vào JWT, OTP và Stringee.
+Cấu hình chung .NET/PostgreSQL, chạy ứng dụng và migration nằm trong [Cấu hình và chạy hệ thống](../system-configuration.md). Trang này tập trung vào JWT và OTP.
 
 ## JWT
 
@@ -23,33 +23,11 @@ dotnet user-secrets set "Jwt:SigningKey" "$(openssl rand -base64 48)"
 
 Production đặt key trong secret manager/environment; không commit key hoặc đưa vào `appsettings.json`.
 
-## Stringee SMS
+## Gửi OTP
 
-AuthModule chọn sender theo môi trường:
+Ứng dụng hiện không tích hợp nhà cung cấp SMS. `LoggingOtpSmsSender` ghi OTP vào application log ở mọi môi trường để luồng đăng ký và đặt lại mật khẩu có thể thử mà không cần cấu hình dịch vụ ngoài. Development dùng OTP `012345`; môi trường khác sinh mã ngẫu nhiên 6 chữ số.
 
-- Development luôn đăng ký `DevelopmentOtpSmsSender`, dùng OTP `012345` và ghi mã vào application log, kể cả khi có cấu hình Stringee. Tạm thời không gọi API bên thứ ba trong Development.
-- Ngoài Development, đủ cả ba `Stringee:ApiKeySid`, `Stringee:ApiKeySecret`, `Stringee:BrandName`: đăng ký `StringeeOtpSmsSender`.
-- Production thiếu bất kỳ giá trị nào: ứng dụng dừng ngay lúc khởi động.
-
-Cấu hình local:
-
-```bash
-dotnet user-secrets set "Stringee:ApiKeySid" "your-api-key-sid"
-dotnet user-secrets set "Stringee:ApiKeySecret" "your-api-key-secret"
-dotnet user-secrets set "Stringee:BrandName" "YOUR_BRANDNAME"
-```
-
-Production dùng environment variable với tên:
-
-```text
-Stringee__ApiKeySid
-Stringee__ApiKeySecret
-Stringee__BrandName
-```
-
-Lấy API Key SID và Secret từ project Stringee; Brandname dùng để gửi OTP cần được đăng ký/kích hoạt theo yêu cầu SMS Brandname của Stringee. Khi được bật ngoài Development, sender gọi `POST https://api.stringee.com/v1/sms`, tự tạo JWT HS256 cho header `X-STRINGEE-AUTH` và gửi số điện thoại quốc tế bỏ dấu `+` theo mẫu API.
-
-Trong Development, lấy OTP trong log có dạng `Development OTP for ...`. Sender local chỉ để thử nghiệm và bỏ qua cấu hình Stringee trong khi tích hợp đang tạm dừng.
+Không dùng sender ghi log cho người dùng thật vì mã OTP sẽ xuất hiện trong log. Trước khi triển khai công khai, cần tích hợp một nhà cung cấp gửi OTP phù hợp.
 
 ## Các cấu hình Production của Auth
 
@@ -60,9 +38,6 @@ export Jwt__SigningKey="replace-with-a-random-secret-at-least-32-characters"
 export Jwt__AccessTokenMinutes="15"
 export Jwt__RefreshTokenDays="30"
 export Jwt__OtpMinutes="5"
-export Stringee__ApiKeySid="your-api-key-sid"
-export Stringee__ApiKeySecret="your-api-key-secret"
-export Stringee__BrandName="YOUR_BRANDNAME"
 ```
 
 Giá trị secret phải được cung cấp qua secret manager của môi trường triển khai; ví dụ trên minh họa tên key và cấu trúc, không phải chỗ lưu secret lâu dài.

@@ -12,8 +12,7 @@ public static class AuthServiceCollectionExtensions
 {
     public static IServiceCollection AddAuthModule(
         this IServiceCollection services,
-        IConfiguration configuration,
-        IWebHostEnvironment environment)
+        IConfiguration configuration)
     {
         services.AddJwtAuthentication(configuration);
         services.AddAuthorization();
@@ -26,7 +25,7 @@ public static class AuthServiceCollectionExtensions
         services.AddScoped<IPermissionsService, PermissionsService>();
         services.AddScoped<IFunctionsService, FunctionsService>();
 
-        services.AddOtpSms(configuration, environment);
+        services.AddOtpSms();
         services.ConfigureHttpJsonOptions(options => AddEnumJsonConverters(options.SerializerOptions));
         services.AddControllers()
             .AddJsonOptions(options => AddEnumJsonConverters(options.JsonSerializerOptions));
